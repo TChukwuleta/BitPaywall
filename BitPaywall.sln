@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{46DB1F48-7DB3-403B-8110-BAB492AB4846}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitPaywall.Api", "BitPaywall.Api\BitPaywall.Api.csproj", "{B45EA651-0C8F-460C-9FEC-57463E884FC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitPaywall.Core", "BitPaywall.Core\BitPaywall.Core.csproj", "{BC1892B2-C8F1-4273-9D5D-B1580F763FB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitPaywall.Application", "BitPaywall.Application\BitPaywall.Application.csproj", "{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitPaywall.Infrastructure", "BitPaywall.Infrastructure\BitPaywall.Infrastructure.csproj", "{077E3B05-F637-4384-A65A-7498EC78588F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B45EA651-0C8F-460C-9FEC-57463E884FC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45EA651-0C8F-460C-9FEC-57463E884FC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45EA651-0C8F-460C-9FEC-57463E884FC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45EA651-0C8F-460C-9FEC-57463E884FC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC1892B2-C8F1-4273-9D5D-B1580F763FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC1892B2-C8F1-4273-9D5D-B1580F763FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC1892B2-C8F1-4273-9D5D-B1580F763FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC1892B2-C8F1-4273-9D5D-B1580F763FB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{077E3B05-F637-4384-A65A-7498EC78588F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{077E3B05-F637-4384-A65A-7498EC78588F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{077E3B05-F637-4384-A65A-7498EC78588F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{077E3B05-F637-4384-A65A-7498EC78588F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B45EA651-0C8F-460C-9FEC-57463E884FC1} = {46DB1F48-7DB3-403B-8110-BAB492AB4846}
+		{BC1892B2-C8F1-4273-9D5D-B1580F763FB8} = {46DB1F48-7DB3-403B-8110-BAB492AB4846}
+		{732BA84B-7AC9-45C9-84E7-478C2D9A6CAB} = {46DB1F48-7DB3-403B-8110-BAB492AB4846}
+		{077E3B05-F637-4384-A65A-7498EC78588F} = {46DB1F48-7DB3-403B-8110-BAB492AB4846}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37B10B90-C6A8-4377-ACA8-24D3DFACC88B}
+	EndGlobalSection
+EndGlobal
