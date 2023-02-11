@@ -44,10 +44,14 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Post update was not successful. Invalid user details");
                 }
-                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id);
+                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == request.UserId);
                 if (post == null)
                 {
                     return Result.Failure("Post update was not successful. Invalid post details");
+                }
+                if (post.PostType == Core.Enums.PostType.Published)
+                {
+                    return Result.Failure("Post update was not successful. Post already published");
                 }
                 var minAmount = _config["Post:MinimumAmount"];
                 var maxAmount = _config["Post:MaximumAmount"];

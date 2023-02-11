@@ -61,21 +61,21 @@ namespace BitPaywall.Infrastructure.Services
             }
         }
 
-        public async Task<Result> CreateUserAsync(User user)
+        public async Task<(Result result, User user)> CreateUserAsync(User user)
         {
             try
             {
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
                 if (existingUser != null)
                 {
-                    return Result.Failure("User with this details already exist");
+                    return (Result.Failure("User with this details already exist"), null);
                 }
                 var newUser = new SystemUser
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    Status = Status.Inactive,
+                    Status = Status.Deactivated,
                     UserName = user.Email,
                     NormalizedEmail = user.Email,
                     Verified = false
@@ -84,13 +84,21 @@ namespace BitPaywall.Infrastructure.Services
                 if (!result.Succeeded)
                 {
                     var errors = result.Errors.Select(c => c.Description);
-                    return Result.Failure(errors);
+                    return (Result.Failure(errors), null);
                 }
                 newUser.UserId = newUser.Id;
                 newUser.Email = user.Email;
                 await _userManager.UpdateAsync(newUser);
                 await _context.SaveChangesAsync(new CancellationToken());
-                return Result.Success(newUser);
+                var userResponse = new User
+                {
+                    UserId = newUser.Id,
+                    FirstName = newUser.FirstName,
+                    LastName = newUser.LastName,
+                    Email = newUser.Email,
+                    Status = newUser.Status
+                };
+                return (Result.Success("User creation was successful"), userResponse);
             }
             catch (Exception ex)
             {

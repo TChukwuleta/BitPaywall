@@ -10,6 +10,7 @@ namespace BitPaywall.Core.Entities
     {
         public int? PostId { get; set; }
         public Post Post { get; set; }
+        public decimal Amount { get; set; }
         public string UserId { get; set; }
     }
 }

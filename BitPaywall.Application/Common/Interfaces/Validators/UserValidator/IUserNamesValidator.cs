@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BitPaywall.Core.Entities
+namespace BitPaywall.Application.Common.Interfaces.Validators.UserValidator
 {
-    public class Account : AuditableEntity
+    public interface IUserNamesValidator : IBaseValidator
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string AccountNumber { get; set; }
-        public decimal Balance { get; set; }
-        public string UserId { get; set; }
     }
 }

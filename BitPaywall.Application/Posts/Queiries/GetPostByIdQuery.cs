@@ -1,5 +1,6 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Application.Common.Interfaces.Validators;
+using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,7 @@ namespace BitPaywall.Application.Posts.Queiries
 
         public async Task<Result> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
+            var post = new Post();
             try
             {
                 var user = await _authService.GetUserById(request.UserId);
@@ -36,11 +38,24 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Unable to retrieve post. Invalid user details specified");
                 }
-                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == request.UserId);
+                post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (post == null)
                 {
-                    return Result.Failure("Unable to retrieve post. Invalid post Id for this user");
+                    return Result.Failure("Post retrieval was not successful. Invalid post specified");
                 }
+                if (post.UserId != request.UserId)
+                {
+                    var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.UserId == request.UserId && c.PostId == post.Id);
+                    if (engagedPost != null)
+                    {
+                        return Result.Success("Post retrieval was successful", post);
+                    }
+                    else
+                    {
+                        // Generate invoice using the post amount
+                    }
+                }
+                
                 return Result.Success("Post retrieval was successful", post);
             }
             catch (Exception ex)

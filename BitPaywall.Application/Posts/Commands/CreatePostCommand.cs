@@ -69,6 +69,7 @@ namespace BitPaywall.Application.Posts.Commands
                     Amount = request.Amount,
                     Views = default,
                     CreatedDate = DateTime.Now,
+                    PostType = PostType.Draft,
                     Status = Status.Active,
                     UserId = request.UserId,
                     Description = request.Description,

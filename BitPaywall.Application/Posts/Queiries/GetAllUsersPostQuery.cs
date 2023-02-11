@@ -43,7 +43,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 var posts = await _context.Posts.Where(c => c.UserId == request.UserId).ToListAsync();
                 if (posts.Count() <= 0)
                 {
-                    return Result.Failure("Retrieving user's post was not successful. No post found");
+                    return Result.Failure("Retrieving user's post was not successful. No post found for this user");
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {

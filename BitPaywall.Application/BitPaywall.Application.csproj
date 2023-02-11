@@ -19,10 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Accounts\" />
     <Folder Include="Common\Model\Response\" />
-    <Folder Include="EngagedPosts\" />
-    <Folder Include="Users\" />
   </ItemGroup>
 
 </Project>

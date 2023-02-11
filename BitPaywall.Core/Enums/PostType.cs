@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Core.Enums
 {
-    public enum Status
+    public enum PostType
     {
-        Active = 1,
-        Archived = 2,
-        Deactivated = 3
+        Draft = 1,
+        Published
     }
 }

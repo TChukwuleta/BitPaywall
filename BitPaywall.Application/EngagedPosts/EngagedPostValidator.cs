@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BitPaywall.Core.Enums
+namespace BitPaywall.Application.EngagedPosts
 {
-    public enum Status
+    internal class EngagedPostValidator
     {
-        Active = 1,
-        Archived = 2,
-        Deactivated = 3
     }
 }

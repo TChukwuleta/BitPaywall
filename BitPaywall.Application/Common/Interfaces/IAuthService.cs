@@ -10,7 +10,7 @@ namespace BitPaywall.Application.Common.Interfaces
 {
     public interface IAuthService
     {
-        Task<Result> CreateUserAsync(User user);
+        Task<(Result result, User user)> CreateUserAsync(User user);
         Task<Result> UpdateUserAsync(User user);
         Task<Result> ChangePasswordAsync(string email, string oldPassword, string newPassword);
         Task<Result> ResetPassword(string email, string password);
