@@ -28,7 +28,7 @@ namespace BitPaywall.Application.Common.Interfaces.Validators
     {
         public string UserId { get; set; }
     }
-    public interface IEmailValidator : IBaseValidator
+    public interface IEmailValidator
     {
         public string Email { get; set; }
     }

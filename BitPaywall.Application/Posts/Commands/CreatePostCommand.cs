@@ -27,14 +27,16 @@ namespace BitPaywall.Application.Posts.Commands
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Result>
     {
         private readonly IAuthService _authService;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly IAppDbContext _context;
         private readonly IConfiguration _config;
 
-        public CreatePostCommandHandler(IAuthService authService, IAppDbContext context, IConfiguration config)
+        public CreatePostCommandHandler(IAuthService authService, IAppDbContext context, IConfiguration config, ICloudinaryService cloudinaryService)
         {
             _authService = authService;
             _context = context;
             _config = config;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<Result> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -46,7 +48,10 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Post creation was not successful. Invalid user details specified");
                 }
-
+                if (string.IsNullOrEmpty(request.Image))
+                {
+                    return Result.Failure("Kindly pass in the base64 string of the image intended for this post");
+                }
                 var existingPost = await _context.Posts.FirstOrDefaultAsync(c => c.Title.ToLower() == request.Title.ToLower());
                 if (existingPost != null)
                 {
@@ -65,7 +70,7 @@ namespace BitPaywall.Application.Posts.Commands
                 var post = new Post
                 {
                     Title = request.Title,
-                    Image = request.Image, // Do cloudinary for image
+                    Image =  await _cloudinaryService.UploadImage(request.Image, request.UserId),//request.Image, // Do cloudinary for image
                     Amount = request.Amount,
                     Views = default,
                     CreatedDate = DateTime.Now,

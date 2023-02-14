@@ -20,12 +20,14 @@ namespace BitPaywall.Application.Posts.Queiries
     public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, Result>
     {
         private readonly IAuthService _authService;
+        private readonly ILightningService _lightningService;
         private readonly IAppDbContext _context;
 
-        public GetPostByIdQueryHandler(IAuthService authService, IAppDbContext context)
+        public GetPostByIdQueryHandler(IAuthService authService, IAppDbContext context, ILightningService lightningService)
         {
             _authService = authService;
             _context = context;
+            _lightningService = lightningService;
         }
 
         public async Task<Result> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
@@ -53,6 +55,12 @@ namespace BitPaywall.Application.Posts.Queiries
                     else
                     {
                         // Generate invoice using the post amount
+                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, "Invoice for a post", Core.Enums.UserType.User);
+                        if (string.IsNullOrEmpty(invoice))
+                        {
+                            return Result.Failure("An error occured while generating invoice");
+                        }
+                        return Result.Success("Invoice generated successfully", invoice);
                     }
                 }
                 

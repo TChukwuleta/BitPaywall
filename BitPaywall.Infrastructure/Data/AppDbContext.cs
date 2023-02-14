@@ -1,7 +1,7 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Core.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Infrastructure.Data
 {
-    public class AppDbContext : DbContext, IAppDbContext
+    public class AppDbContext : IdentityDbContext, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

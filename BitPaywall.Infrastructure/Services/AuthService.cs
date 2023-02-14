@@ -32,7 +32,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if (user == null)
                 {
                     return Result.Failure("User not found");
@@ -111,7 +111,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if(user == null)
                 {
                     return Result.Failure("Invalid user details specified");
@@ -143,7 +143,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if (user == null)
                 {
                     return Result.Failure("Invalid user specified");
@@ -195,7 +195,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var existingUser = await _userManager.FindByEmailAsync(email);
+                var existingUser = await _userManager.FindByNameAsync(email);
                 if (existingUser == null)
                 {
                     return (Result.Failure("Invalid user details specified"), null);
@@ -229,7 +229,7 @@ namespace BitPaywall.Infrastructure.Services
                 {
                     FirstName = existingUser.FirstName,
                     LastName = existingUser.LastName,
-                    Email = existingUser.Email,
+                    Email = existingUser.UserName,
                     UserId = existingUser.UserId,
                 };
                 return (Result.Success("User details retrieval was successful"), user);
@@ -245,7 +245,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if (user == null)
                 {
                     return Result.Failure("Invalid email or password specified");
@@ -269,7 +269,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if(user == null)
                 {
                     return Result.Failure("Invalid user details specified");
@@ -297,7 +297,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var existingUser = await _userManager.FindByEmailAsync(user.Email);
+                var existingUser = await _userManager.FindByNameAsync(user.Email);
                 if (existingUser == null)
                 {
                     return Result.Failure("Invalid user details specified");
@@ -324,7 +324,7 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
+                var user = await _userManager.FindByNameAsync(email);
                 if (user == null)
                 {
                     return Result.Failure("Invalid user details specified");

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Common.Interfaces
 {
-    public interface IlightningClientService
+    public interface ILightningService
     {
         Task<string> CreateInvoice(long satoshis, string message, UserType userType);
         Task<long> GetChannelOutboundBalance(UserType userType);

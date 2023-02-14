@@ -28,8 +28,7 @@ namespace BitPaywall.Application.Users.Commands
         {
             try
             {
-                var result = await _authService.Login(request.Email, request.Password);
-                return Result.Success(result);
+                return await _authService.Login(request.Email, request.Password);
             }
             catch (Exception ex)
             {
