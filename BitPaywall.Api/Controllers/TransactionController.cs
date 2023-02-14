@@ -91,6 +91,20 @@ namespace BitPaywall.Api.Controllers
             }
         }
 
+        [HttpGet("getcredittransaction/{skip}/{take}/{accountnumber}/{userid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetCreditTransactionsByAccountNumber(int skip, int take, string accountnumber, string userid)
+        {
+            try
+            {
+                return await Mediator.Send(new GetCreditTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Credit transactions retrieval failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
         [HttpGet("getalldebit/{skip}/{take}/{userid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Result>> GetAllCreditTransactionsByUser(int skip, int take, string userid)
@@ -98,6 +112,20 @@ namespace BitPaywall.Api.Controllers
             try
             {
                 return await Mediator.Send(new GetDebitTransactionByUserIdQuery { UserId = userid, Skip = skip, Take = take });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Debit transactions retrieval failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpGet("getdebittransaction/{skip}/{take}/{accountnumber}/{userid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetDebitTransactionsByAccountNumber(int skip, int take, string accountnumber, string userid)
+        {
+            try
+            {
+                return await Mediator.Send(new GetDebitTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
             }
             catch (Exception ex)
             {

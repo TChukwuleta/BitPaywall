@@ -44,6 +44,11 @@ namespace BitPaywall.Application.Transactions.Commands
                 {
                     return Result.Failure("Transaction creation failed. Invalid user details");
                 }
+                var account = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == request.UserId);
+                if (account == null)
+                {
+                    return Result.Failure("Unable to create transaction. Account does not exist for this useer");
+                }
                 var entity = new Transaction
                 {
                     DebitAccount = request.DebitAccount,
@@ -55,6 +60,7 @@ namespace BitPaywall.Application.Transactions.Commands
                     TransactionStatus = TransactionStatus.Success,
                     Narration = request.Description,
                     CreatedDate = DateTime.Now,
+                    AccountId = account.Id
                 };
                 await _context.Transactions.AddAsync(entity);
                 await _context.SaveChangesAsync(cancellationToken);
