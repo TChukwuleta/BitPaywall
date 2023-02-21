@@ -38,25 +38,25 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Published posts retrieval was not successful. Invalid user details specified");
                 }
-                var draftPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostType.Draft).ToListAsync();
-                if (draftPosts.Count() <= 0)
+                var publishedPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostType.Published).ToListAsync();
+                if (publishedPosts.Count() <= 0)
                 {
-                    return Result.Failure("Published posts retrieval was not successful. No draft posts found for this user");
+                    return Result.Failure("Published posts retrieval was not successful. No published posts found for this user");
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
-                    posts = draftPosts;
+                    posts = publishedPosts;
                 }
                 else
                 {
-                    posts = draftPosts.Skip(request.Skip).Take(request.Take).ToList();
+                    posts = publishedPosts.Skip(request.Skip).Take(request.Take).ToList();
                 }
                 var entity = new
                 {
                     Entity = posts,
-                    Count = draftPosts.Count()
+                    Count = publishedPosts.Count()
                 };
-                return Result.Success("Pubkished posts retrieval was successful", posts);
+                return Result.Success("Published posts retrieval was successful", posts);
             }
             catch (Exception ex)
             {

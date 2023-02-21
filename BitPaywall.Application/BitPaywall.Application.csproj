@@ -18,8 +18,4 @@
     <ProjectReference Include="..\BitPaywall.Core\BitPaywall.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\Model\Response\" />
-  </ItemGroup>
-
 </Project>

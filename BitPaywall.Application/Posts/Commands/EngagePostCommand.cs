@@ -53,6 +53,11 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Unable to pay for post. Invalid post specified");
                 }
+                var userEngagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.PostId == post.Id && c.UserId == request.UserId);
+                if (userEngagedPost != null)
+                {
+                    return Result.Success("You have already paid for this post", post);
+                }
                 var creditAccount = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == post.UserId);
                 if (creditAccount == null)
                 {

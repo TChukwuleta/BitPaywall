@@ -1,9 +1,11 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
+using BitPaywall.Application.Common.Model.Response;
 using BitPaywall.Core.Enums;
 using BitPaywall.Infrastructure.Helper;
 using Grpc.Core;
 using Lnrpc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,6 +100,78 @@ namespace BitPaywall.Infrastructure.Services
                         break;
                 }
                 return response;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public async Task<InvoiceSettlementResponse> ListenForSettledInvoice(UserType userType)
+        {
+            var settledInvoiceResponse = new InvoiceSettlementResponse();
+            try
+            {
+                var helper = new LightningHelper(_config);
+                var txnReq = new InvoiceSubscription();
+
+                switch (userType)
+                {
+                    case UserType.User:
+                        var userClient = helper.GetUserClient();
+                        var settledInvoioce = userClient.SubscribeInvoices(txnReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetUserMacaroon()) });
+                        using (var call = settledInvoioce)
+                        {
+                            var invoice = call.ResponseStream.Current;
+                            if (invoice.State == Invoice.Types.InvoiceState.Settled)
+                            {
+                                Console.WriteLine(invoice.ToString());
+                                var split = invoice.Memo.Split('/');
+                                settledInvoiceResponse.PaymentRequest = invoice.PaymentRequest;
+                                settledInvoiceResponse.IsKeysend = invoice.IsKeysend;
+                                settledInvoiceResponse.Value = invoice.Value;
+                                settledInvoiceResponse.Expiry = invoice.Expiry;
+                                settledInvoiceResponse.Settled = invoice.Settled;
+                                settledInvoiceResponse.SettledDate = invoice.SettleDate;
+                                settledInvoiceResponse.SettledIndex = (long)invoice.SettleIndex;
+                                settledInvoiceResponse.Private = invoice.Private;
+                                settledInvoiceResponse.AmountInSat = invoice.AmtPaidSat;
+                                settledInvoiceResponse.PostId = int.Parse(split[0]);
+                                settledInvoiceResponse.UserId = split[1];
+                                return settledInvoiceResponse;
+                            }
+                        }
+                        break;
+                    case UserType.Admin:
+                        var adminClient = helper.GetAdminClient();
+                        var settledAdminInvoioce = adminClient.SubscribeInvoices(txnReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
+                        using (var call = settledAdminInvoioce)
+                        {
+                            var invoice = call.ResponseStream.Current;
+                            if (invoice.State == Invoice.Types.InvoiceState.Settled)
+                            {
+                                Console.WriteLine(invoice.ToString());
+                                var split = invoice.Memo.Split('/');
+                                settledInvoiceResponse.PaymentRequest = invoice.PaymentRequest;
+                                settledInvoiceResponse.IsKeysend = invoice.IsKeysend;
+                                settledInvoiceResponse.Value = invoice.Value;
+                                settledInvoiceResponse.Expiry = invoice.Expiry;
+                                settledInvoiceResponse.Settled = invoice.Settled;
+                                settledInvoiceResponse.SettledDate = invoice.SettleDate;
+                                settledInvoiceResponse.SettledIndex = (long)invoice.SettleIndex;
+                                settledInvoiceResponse.Private = invoice.Private;
+                                settledInvoiceResponse.AmountInSat = invoice.AmtPaidSat;
+                                settledInvoiceResponse.PostId = int.Parse(split[0]);
+                                settledInvoiceResponse.UserId = split[1];
+                                return settledInvoiceResponse;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return settledInvoiceResponse;
             }
             catch (Exception ex)
             {

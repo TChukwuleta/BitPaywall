@@ -62,6 +62,20 @@ namespace BitPaywall.Api.Controllers
             }
         }
 
+
+        [HttpPost("payforpost")]
+        public async Task<ActionResult<Result>> PayForPost(EngagePostCommand command)
+        {
+            try
+            {
+                return await Mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to pay for post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
         [HttpGet("gettransactionsbyid/{skip}/{take}/{userid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Result>> GetAllTransactionsByUser(int skip, int take, string userid)
