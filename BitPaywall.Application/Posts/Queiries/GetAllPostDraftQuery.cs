@@ -39,7 +39,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Draft posts retrieval was not successful. Invalid user details specified");
                 }
-                var draftPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostType.Draft).ToListAsync();
+                var draftPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostStatusType.Draft).ToListAsync();
                 if (draftPosts.Count() <= 0)
                 {
                     return Result.Failure("Draft posts retrieval was not successful. No draft posts found for this user");

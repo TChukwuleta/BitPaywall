@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BitPaywall.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,6 @@ namespace BitPaywall.Application.Common.Interfaces.Validators
         public string Story { get; set; }
         public string Image { get; set; }
         public decimal Amount { get; set; }
+        public PostCategory PostCategory { get; set; }
     }
 }

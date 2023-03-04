@@ -1,5 +1,6 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Application.Common.Interfaces.Validators;
+using BitPaywall.Core.Enums;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace BitPaywall.Application.Posts.Commands
         public string Story { get; set; }
         public string Image { get; set; }
         public decimal Amount { get; set; }
+        public PostCategory PostCategory { get; set; }
     }
 
     public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, Result>
@@ -28,11 +30,13 @@ namespace BitPaywall.Application.Posts.Commands
         private readonly IAuthService _authService;
         private readonly IAppDbContext _context;
         private readonly IConfiguration _config;
-        public UpdatePostCommandHandler(IAuthService authService, IAppDbContext context, IConfiguration config)
+        private readonly ICloudinaryService _cloudinaryService;
+        public UpdatePostCommandHandler(IAuthService authService, IAppDbContext context, IConfiguration config, ICloudinaryService cloudinaryService)
         {
             _authService = authService;
             _context = context;
             _config = config;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<Result> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
@@ -44,12 +48,16 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Post update was not successful. Invalid user details");
                 }
+                if (string.IsNullOrEmpty(request.Image))
+                {
+                    return Result.Failure("Kindly pass in the base64 string of the image intended for this post");
+                }
                 var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == request.UserId);
                 if (post == null)
                 {
                     return Result.Failure("Post update was not successful. Invalid post details");
                 }
-                if (post.PostType == Core.Enums.PostType.Published)
+                if (post.PostType == PostStatusType.Published)
                 {
                     return Result.Failure("Post update was not successful. Post already published");
                 }
@@ -63,10 +71,11 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Amount specified is greater than the maximum specified amount by the system");
                 }
-                post.Image = request.Image; // cloudinary image
+                post.Image = await _cloudinaryService.UploadImage(request.Image, request.UserId);
                 post.Story = request.Story;
                 post.Description = request.Description;
                 post.Amount = request.Amount;
+                post.PostCategory = request.PostCategory;
                 post.LastModifiedDate = DateTime.Now;
                 _context.Posts.Update(post);
                 await _context.SaveChangesAsync(cancellationToken);

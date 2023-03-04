@@ -14,7 +14,10 @@ namespace BitPaywall.Core.Entities
         public string Story { get; set; }
         public string Description { get; set; }
         public decimal Amount { get; set; }
-        public PostType PostType { get; set; }
+        public PostStatusType PostType { get; set; }
+        public string PostStatusTypeDesc { get { return PostType.ToString(); } }
+        public PostCategory PostCategory { get; set; }
+        public string PostCategoryDesc { get { return PostCategory.ToString(); } }
         public int Views { get; set; }
         public string UserId { get; set; }
     }

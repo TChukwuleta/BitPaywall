@@ -48,7 +48,7 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Unable to pay for post. User account details does not exist");
                 }
-                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.PostId && c.PostType == Core.Enums.PostType.Published);
+                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.PostId && c.PostType == Core.Enums.PostStatusType.Published);
                 if (post == null)
                 {
                     return Result.Failure("Unable to pay for post. Invalid post specified");

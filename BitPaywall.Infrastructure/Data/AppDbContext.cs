@@ -19,6 +19,7 @@ namespace BitPaywall.Infrastructure.Data
         public DbSet<SystemUser> SystemUsers { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<EngagedPost> EngagedPosts { get; set; }
+        public DbSet<PostRating> PostRatings { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 

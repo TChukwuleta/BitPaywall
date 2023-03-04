@@ -38,7 +38,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Published posts retrieval was not successful. Invalid user details specified");
                 }
-                var publishedPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostType.Published).ToListAsync();
+                var publishedPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostStatusType.Published).ToListAsync();
                 if (publishedPosts.Count() <= 0)
                 {
                     return Result.Failure("Published posts retrieval was not successful. No published posts found for this user");

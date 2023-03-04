@@ -16,6 +16,10 @@ namespace BitPaywall.Application.Common.Interfaces.Validators
     {
         public Status Status { get; set; }
     }
+    public interface IPostCategoryValidator : IBaseValidator
+    {
+        public PostCategory PostCategory { get; set; }
+    }
     public interface INameValidator : IBaseValidator
     {
         public string Name { get; set; }

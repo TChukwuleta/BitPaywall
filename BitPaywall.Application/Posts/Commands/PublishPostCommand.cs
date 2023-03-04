@@ -42,7 +42,7 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Unable to publish post. Invalid post specified");
                 }
-                post.PostType = Core.Enums.PostType.Published;
+                post.PostType = Core.Enums.PostStatusType.Published;
                 _context.Posts.Update(post);
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Post published successfully", post);

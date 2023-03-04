@@ -77,7 +77,7 @@ namespace BitPaywall.Application.Posts.Commands
                     return Result.Failure(transactionMessage);
                 }
                 await _context.SaveChangesAsync(cancellationToken);
-                return Result.Success("Invoice has been confirmed. You can now read the psot", post);
+                return Result.Success("Invoice has been confirmed. You can now read the post", post);
             }
             catch (Exception ex)
             {

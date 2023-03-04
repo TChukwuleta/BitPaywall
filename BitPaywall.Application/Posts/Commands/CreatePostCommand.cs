@@ -22,6 +22,7 @@ namespace BitPaywall.Application.Posts.Commands
         public string Image { get; set; }
         public decimal Amount { get; set; }
         public string UserId { get; set; }
+        public PostCategory PostCategory { get; set; }
     }
 
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Result>
@@ -70,11 +71,12 @@ namespace BitPaywall.Application.Posts.Commands
                 var post = new Post
                 {
                     Title = request.Title,
-                    Image =  await _cloudinaryService.UploadImage(request.Image, request.UserId),//request.Image, // Do cloudinary for image
+                    Image = await _cloudinaryService.UploadImage(request.Image, request.UserId),
                     Amount = request.Amount,
                     Views = default,
                     CreatedDate = DateTime.Now,
-                    PostType = PostType.Draft,
+                    PostType = PostStatusType.Draft,
+                    PostCategory = request.PostCategory,
                     Status = Status.Active,
                     UserId = request.UserId,
                     Description = request.Description,
