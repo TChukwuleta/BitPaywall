@@ -32,7 +32,7 @@ namespace BitPaywall.Application.Users.Commands
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "User login was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure("User login was not successful", ex?.Message ?? ex?.InnerException.Message);
             }
         }
     }

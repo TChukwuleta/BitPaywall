@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
-    public class GetAllPostsQuery : IRequest<Result>, IBaseValidator
+    public class GetAllPostsQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }
@@ -43,6 +43,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 var allPosts = await _context.Posts.Select(item => new Post
                 {
                     Id = item.Id,
+                    Image = item.Image,
                     Title = item.Title,
                     Description = item.Description,
                     PostCategory = item.PostCategory,
@@ -64,7 +65,12 @@ namespace BitPaywall.Application.Posts.Queiries
                     posts = allPosts.Skip(request.Skip).Take(request.Take).ToList();
                 }
 
-                return Result.Success("All posts retrieval was successful", posts);
+                var entity = new
+                {
+                    Post = posts,
+                    Count = allPosts.Count()
+                };
+                return Result.Success("All posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {

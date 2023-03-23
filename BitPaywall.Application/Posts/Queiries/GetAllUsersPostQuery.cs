@@ -55,7 +55,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 }
                 var entity = new
                 {
-                    Entity = response,
+                    Post = response,
                     Count = posts.Count()
                 };
                 return Result.Success("Retrieving user's post was successful", entity);

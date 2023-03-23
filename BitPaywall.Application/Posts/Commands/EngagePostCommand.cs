@@ -3,18 +3,14 @@ using BitPaywall.Application.Common.Interfaces.Validators;
 using BitPaywall.Application.Lightning.Commands;
 using BitPaywall.Application.Transactions.Commands;
 using BitPaywall.Core.Entities;
+using BitPaywall.Core.Enums;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
-    public class EngagePostCommand : IRequest<Result>, IBaseValidator
+    public class EngagePostCommand : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int PostId { get; set; }
         public string Invoice { get; set; }
@@ -48,7 +44,7 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Unable to pay for post. User account details does not exist");
                 }
-                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.PostId && c.PostType == Core.Enums.PostStatusType.Published);
+                var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.PostId && c.PostType == PostStatusType.Published);
                 if (post == null)
                 {
                     return Result.Failure("Unable to pay for post. Invalid post specified");
@@ -81,7 +77,7 @@ namespace BitPaywall.Application.Posts.Commands
                     PostId = request.PostId,
                     Post = post,
                     UserId = request.UserId,
-                    Status = Core.Enums.Status.Active
+                    Status = Status.Active
                 };
                 await _context.EngagedPosts.AddAsync(engagedPost);
 
@@ -91,7 +87,7 @@ namespace BitPaywall.Application.Posts.Commands
                     DebitAccount = account.AccountNumber,
                     CreditAccount = creditAccount.AccountNumber,
                     Amount = post.Amount,
-                    TransactionType = Core.Enums.TransactionType.Debit,
+                    TransactionType = TransactionType.Debit,
                     UserId = request.UserId
                 };
 

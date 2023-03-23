@@ -352,7 +352,7 @@ namespace BitPaywall.Infrastructure.Services
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Email, email),
-                    new Claim("userId", UserId),
+                    new Claim("userid", UserId),
                     new Claim(JwtRegisteredClaimNames.Sub, email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),

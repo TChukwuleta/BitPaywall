@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
-    public class UpdatePostCommand : IRequest<Result>, IIdValidator, IPostRequestValidator
+    public class UpdatePostCommand : AuthToken, IRequest<Result>, IIdValidator, IPostRequestValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -48,10 +48,6 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Post update was not successful. Invalid user details");
                 }
-                if (string.IsNullOrEmpty(request.Image))
-                {
-                    return Result.Failure("Kindly pass in the base64 string of the image intended for this post");
-                }
                 var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == request.UserId);
                 if (post == null)
                 {
@@ -71,7 +67,7 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Amount specified is greater than the maximum specified amount by the system");
                 }
-                post.Image = await _cloudinaryService.UploadImage(request.Image, request.UserId);
+                post.Image = string.IsNullOrEmpty(request.Image) ? post.Image : await _cloudinaryService.UploadImage(request.Image, request.UserId);
                 post.Story = request.Story;
                 post.Description = request.Description;
                 post.Amount = request.Amount;
@@ -79,7 +75,7 @@ namespace BitPaywall.Application.Posts.Commands
                 post.LastModifiedDate = DateTime.Now;
                 _context.Posts.Update(post);
                 await _context.SaveChangesAsync(cancellationToken);
-                return Result.Success("Post update was successful", post);
+                return Result.Success("Post updated successfully", post);
             }
             catch (Exception ex)
             {

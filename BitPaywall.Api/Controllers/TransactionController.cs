@@ -1,6 +1,8 @@
 ﻿using BitPaywall.Application.Transactions.Commands;
 using BitPaywall.Application.Transactions.Queries;
 using BitPaywall.Core.Model;
+using BitPaywall.Infrastructure.Utility;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,12 +13,13 @@ namespace BitPaywall.Api.Controllers
     public class TransactionController : ApiController
     {
         protected readonly IHttpContextAccessor _contextAccessor;
-        private readonly string accessToken;
-        public TransactionController(IHttpContextAccessor contextAccessor)
+        private readonly IMediator _mediator;
+        public TransactionController(IHttpContextAccessor contextAccessor, IMediator mediator)
         {
             _contextAccessor = contextAccessor;
-            accessToken = _contextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
-            if (string.IsNullOrEmpty(accessToken))
+            _mediator = mediator;
+            accessToken = _contextAccessor.HttpContext.Request.Headers["Authorization"].ToString()?.ExtractToken();
+            if (accessToken == null)
             {
                 throw new Exception("You are not authorized!");
             }
@@ -27,7 +30,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(command);
+                return await _mediator.Send(command);
             }
             catch (Exception ex)
             {
@@ -41,7 +44,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetAllTransactionsQuery { Skip = skip, Take = take, UserId = userid });
+                return await _mediator.Send(new GetAllTransactionsQuery { Skip = skip, Take = take, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -55,7 +58,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetTransactionByIdQuery { Id = id, UserId = userid });
+                return await _mediator.Send(new GetTransactionByIdQuery { Id = id, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -69,7 +72,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetTransactionsByTxnIdQuery { TxnRef = txnref, UserId = userid });
+                return await _mediator.Send(new GetTransactionsByTxnIdQuery { TxnRef = txnref, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -83,7 +86,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetCreditTransactionsByUserIdQuery { UserId = userid, Skip = skip, Take = take });
+                return await _mediator.Send(new GetCreditTransactionsByUserIdQuery { UserId = userid, Skip = skip, Take = take });
             }
             catch (Exception ex)
             {
@@ -97,7 +100,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetCreditTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
+                return await _mediator.Send(new GetCreditTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
             }
             catch (Exception ex)
             {
@@ -111,7 +114,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetDebitTransactionByUserIdQuery { UserId = userid, Skip = skip, Take = take });
+                return await _mediator.Send(new GetDebitTransactionByUserIdQuery { UserId = userid, Skip = skip, Take = take });
             }
             catch (Exception ex)
             {
@@ -125,7 +128,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await Mediator.Send(new GetDebitTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
+                return await _mediator.Send(new GetDebitTransactionByAccountNumberQuery { AccountNumber = accountnumber, UserId = userid, Skip = skip, Take = take });
             }
             catch (Exception ex)
             {

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
-    public class CreatePostCommand : IRequest<Result>, IBaseValidator, IPostRequestValidator
+    public class CreatePostCommand : AuthToken, IRequest<Result>, IBaseValidator, IPostRequestValidator
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -83,8 +83,8 @@ namespace BitPaywall.Application.Posts.Commands
                     Story = request.Story
                 };
 
-                _context.Posts.AddAsync(post);
-                _context.SaveChangesAsync(cancellationToken);
+                await _context.Posts.AddAsync(post);
+                await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Post creation was successful", post);
             }
             catch (Exception ex)

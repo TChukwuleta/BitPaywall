@@ -54,10 +54,10 @@ namespace BitPaywall.Application.Posts.Queiries
                 }
                 var entity = new
                 {
-                    Entity = posts,
+                    Post = posts,
                     Count = draftPosts.Count()
                 };
-                return Result.Success("Draft posts retrieval was successful", posts);
+                return Result.Success("Draft posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {
