@@ -10,6 +10,7 @@ namespace BitPaywall.Core.Enums
     {
         Bitcoin = 1,
         Lightning,
-        Fiat
+        Fiat,
+        Account
     }
 }

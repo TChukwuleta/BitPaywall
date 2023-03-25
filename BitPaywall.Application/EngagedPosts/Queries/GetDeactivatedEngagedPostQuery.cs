@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Queries
 {
-    public class GetDeactivatedEngagedPostQuery : IRequest<Result>, IBaseValidator
+    public class GetDeactivatedEngagedPostQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }
@@ -62,7 +62,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Deactivated engaged posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Deactivated engaged posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

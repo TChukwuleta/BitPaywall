@@ -38,7 +38,7 @@ namespace BitPaywall.Application.EngagedPosts.Commands
                 {
                     return Result.Failure("Updating engaged post failed. Invalid user details specified");
                 }
-                var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.Id == request.Id);
+                var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.Id == request.Id && c.UserId == request.UserId);
                 if (engagedPost == null)
                 {
                     return Result.Failure("Updating engaged post failed. Invalid post specified");

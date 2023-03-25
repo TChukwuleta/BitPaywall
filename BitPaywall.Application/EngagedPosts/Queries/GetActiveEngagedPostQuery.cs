@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BitPaywall.Application.EngagedPosts.Queries
 {
-    public class GetActiveEngagedPostQuery : IRequest<Result>, IBaseValidator
+    public class GetActiveEngagedPostQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }
@@ -37,7 +37,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
                 var engagedPosts = await _context.EngagedPosts.Where(c => c.UserId == request.UserId && c.Status == Status.Active).ToListAsync();
                 if (engagedPosts.Count() <= 0)
                 {
-                    return Result.Failure("No engaged posts found for this user");
+                    return Result.Failure("No active engaged posts found for this user");
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
@@ -52,11 +52,11 @@ namespace BitPaywall.Application.EngagedPosts.Queries
                     Entity = posts,
                     Count = engagedPosts.Count()
                 };
-                return Result.Success("Engaged posts retrieval was successful", entity);
+                return Result.Success("Active engaged posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Engaged posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Engaged posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

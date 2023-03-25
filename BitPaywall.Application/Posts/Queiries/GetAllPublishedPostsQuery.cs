@@ -4,15 +4,10 @@ using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
-    public class GetAllPublishedPostsQuery : IRequest<Result>, IBaseValidator
+    public class GetAllPublishedPostsQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }

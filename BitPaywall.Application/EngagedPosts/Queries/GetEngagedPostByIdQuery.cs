@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Queries
 {
-    public class GetEngagedPostByIdQuery : IRequest<Result>, IIdValidator
+    public class GetEngagedPostByIdQuery : AuthToken, IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -45,7 +45,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Engaged post retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Engaged post retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

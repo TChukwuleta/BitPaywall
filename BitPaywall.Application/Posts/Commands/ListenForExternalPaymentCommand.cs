@@ -12,24 +12,23 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
-    public class ListenForInvoiceCommand : IRequest<Result>
+    public class ListenForExternalPaymentCommand : IRequest<Result>
     {
     }
 
-    public class ListenForInvoiceCommandHandler : IRequestHandler<ListenForInvoiceCommand, Result>
+    public class ListenForExternalPaymentCommandHandler : IRequestHandler<ListenForExternalPaymentCommand, Result>
     {
         private readonly IAuthService _authService;
         private readonly ILightningService _lightningService;
         private readonly IAppDbContext _context;
-
-        public ListenForInvoiceCommandHandler(IAuthService authService, ILightningService lightningService, IAppDbContext context)
+        public ListenForExternalPaymentCommandHandler(IAuthService authService, ILightningService lightningService, IAppDbContext context)
         {
             _authService = authService;
             _lightningService = lightningService;
             _context = context;
         }
 
-        public async Task<Result> Handle(ListenForInvoiceCommand request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(ListenForExternalPaymentCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -39,26 +38,11 @@ namespace BitPaywall.Application.Posts.Commands
                     return Result.Failure("An error occured.");
                 }
                 var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == listener.PostId);
-                var account = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == listener.UserId);
-                if (account == null)
-                {
-                    return Result.Failure("Invalid user account. Kindly create a new account.");
-                }
-
-                var authorsAccount = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == post.UserId);
+                var authorsAccount = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == listener.UserId);
                 if (authorsAccount == null)
                 {
-                    return Result.Failure("Invalid author account. Please contact support.");
+                    return Result.Failure("Invalid author account. Kindly create a new account.");
                 }
-                var engagedPost = new EngagedPost
-                {
-                    CreatedDate = DateTime.Now,
-                    PostId = post.Id,
-                    Post = post,
-                    UserId = listener.UserId,
-                    Status = Core.Enums.Status.Active
-                };
-                await _context.EngagedPosts.AddAsync(engagedPost);
 
                 var activityPost = await _context.PostAnalytics.FirstOrDefaultAsync(c => c.PostId == post.Id);
                 if (activityPost == null)
@@ -80,7 +64,6 @@ namespace BitPaywall.Application.Posts.Commands
                 var transactionRequest = new CreateTransactionCommand
                 {
                     Description = "Payment for a post",
-                    DebitAccount = account.AccountNumber,
                     CreditAccount = authorsAccount.AccountNumber,
                     Amount = post.Amount,
                     TransactionType = Core.Enums.TransactionType.Debit,
@@ -92,12 +75,30 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure(transactionMessage);
                 }
+                var postAnalytics = await _context.PostAnalytics.FirstOrDefaultAsync(c => c.PostId == post.Id);
+                if (postAnalytics == null)
+                {
+                    var newPostAnalytics = new PostAnalytic
+                    {
+                        CreatedDate = DateTime.Now,
+                        Status = Core.Enums.Status.Active,
+                        PostId = post.Id,
+                        AmountGenerated = post.Amount,
+                    };
+                    await _context.PostAnalytics.AddAsync(newPostAnalytics);
+                }
+                else
+                {
+                    postAnalytics.AmountGenerated += post.Amount;
+                    _context.PostAnalytics.Update(postAnalytics);
+                }
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Invoice has been confirmed. You can now read the post", post);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Invoice confirmation was not successful", ex?.Message ?? ex?.InnerException.Message });
+
+                throw;
             }
         }
     }

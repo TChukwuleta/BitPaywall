@@ -4,15 +4,10 @@ using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Queries
 {
-    public class GetAllEngagedPostQuery : IRequest<Result>, IBaseValidator
+    public class GetAllEngagedPostQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }
@@ -62,7 +57,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Engaged posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Engaged posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

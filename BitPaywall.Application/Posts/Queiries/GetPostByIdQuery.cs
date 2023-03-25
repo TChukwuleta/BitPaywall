@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
-    public class GetPostByIdQuery : IRequest<Result>, IIdValidator
+    public class GetPostByIdQuery : AuthToken, IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -45,11 +45,29 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Post retrieval was not successful. Invalid post specified");
                 }
+                var postAnalytics = await _context.PostAnalytics.FirstOrDefaultAsync(c => c.PostId == request.Id);
                 if (post.UserId != request.UserId)
                 {
                     var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.UserId == request.UserId && c.PostId == post.Id);
                     if (engagedPost != null)
                     {
+                        if (postAnalytics == null)
+                        {
+                            var newPostAnalytics = new PostAnalytic
+                            {
+                                CreatedDate = DateTime.Now,
+                                Status = Core.Enums.Status.Active,
+                                PostId = request.Id,
+                                ReadCount = 1
+                            };
+                            await _context.PostAnalytics.AddAsync(newPostAnalytics);
+                        }
+                        else
+                        {
+                            postAnalytics.ReadCount += 1;
+                            _context.PostAnalytics.Update(postAnalytics);
+                        }
+                        await _context.SaveChangesAsync(cancellationToken);
                         return Result.Success("Post retrieval was successful", post);
                     }
                     else
@@ -63,12 +81,29 @@ namespace BitPaywall.Application.Posts.Queiries
                         return Result.Success("Invoice generated successfully", invoice);
                     }
                 }
-                
+
+                if (postAnalytics == null)
+                {
+                    var newPostAnalytics = new PostAnalytic
+                    {
+                        CreatedDate = DateTime.Now,
+                        Status = Core.Enums.Status.Active,
+                        PostId = request.Id,
+                        ReadCount = 1
+                    };
+                    await _context.PostAnalytics.AddAsync(newPostAnalytics);
+                }
+                else
+                {
+                    postAnalytics.ReadCount += 1;
+                    _context.PostAnalytics.Update(postAnalytics);
+                }
+                await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Post retrieval was successful", post);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Post retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure("Post retrieval was not successful", ex?.Message ?? ex?.InnerException.Message);
             }
         }
     }

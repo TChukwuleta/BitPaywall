@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
-    public class GetAllUsersPostQuery : IRequest<Result>, IBaseValidator
+    public class GetAllUsersPostQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }

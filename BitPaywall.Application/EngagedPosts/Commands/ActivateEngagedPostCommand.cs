@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Commands
 {
-    public class ActivateEngagedPostCommand : IRequest<Result>, IIdValidator
+    public class ActivateEngagedPostCommand : AuthToken, IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }

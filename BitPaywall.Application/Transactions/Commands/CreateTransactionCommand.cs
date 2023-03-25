@@ -16,7 +16,7 @@ namespace BitPaywall.Application.Transactions.Commands
 {
     public class CreateTransactionCommand : IRequest<Result>, IBaseValidator
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string DebitAccount { get; set; }
         public string CreditAccount { get; set; }
         public decimal Amount { get; set; }
@@ -44,41 +44,49 @@ namespace BitPaywall.Application.Transactions.Commands
                 {
                     return Result.Failure("Transaction creation failed. Invalid user details");
                 }
-                var account = await _context.Accounts.FirstOrDefaultAsync(c => c.UserId == request.UserId && c.AccountNumber == request.DebitAccount);
-                if (account == null)
-                {
-                    return Result.Failure("Unable to create transaction. Account does not exist for this useer");
-                }
-
-                if (account.Balance < request.Amount)
-                {
-                    return Result.Failure("Insufficient funds. Kindly topup your account to continue");
-                }
                 var creditAccount = await _context.Accounts.FirstOrDefaultAsync(c => c.AccountNumber == request.CreditAccount);
                 if (creditAccount == null)
                 {
                     return Result.Failure("Invalid credit account specified");
                 }
-
+                if (!string.IsNullOrEmpty(request.DebitAccount))
+                {
+                    var account = await _context.Accounts.FirstOrDefaultAsync(c => c.AccountNumber == request.DebitAccount);
+                    if (account == null)
+                    {
+                        return Result.Failure("Unable to create transaction. Account does not exist for this useer");
+                    }
+                    var debitEntity = new Transaction
+                    {
+                        DebitAccount = request.DebitAccount,
+                        CreditAccount = request.CreditAccount,
+                        UserId = account.UserId,
+                        Amount = request.Amount,
+                        TransactionType = request.TransactionType,
+                        TransactionReference = reference,
+                        TransactionStatus = TransactionStatus.Success,
+                        Narration = request.Description,
+                        CreatedDate = DateTime.Now,
+                        AccountId = account.Id
+                    };
+                    await _context.Transactions.AddAsync(debitEntity);
+                }
                 var entity = new Transaction
                 {
-                    DebitAccount = request.DebitAccount,
+                    DebitAccount = string.IsNullOrEmpty(request.DebitAccount) ? "" : request.DebitAccount,
                     CreditAccount = request.CreditAccount,
-                    UserId = request.UserId,
+                    UserId = creditAccount.UserId,
                     Amount = request.Amount,
                     TransactionType = request.TransactionType,
                     TransactionReference = reference,
                     TransactionStatus = TransactionStatus.Success,
                     Narration = request.Description,
                     CreatedDate = DateTime.Now,
-                    AccountId = account.Id
+                    AccountId = creditAccount.Id
                 };
                 await _context.Transactions.AddAsync(entity);
-
                 creditAccount.Balance += request.Amount;
-                account.Balance -= request.Amount;
                 _context.Accounts.Update(creditAccount);
-                _context.Accounts.Update(account);
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Transaction creation was successful", entity);
             }

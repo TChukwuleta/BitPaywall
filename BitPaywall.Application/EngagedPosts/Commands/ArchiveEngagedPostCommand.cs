@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Commands
 {
-    public class ArchiveEngagedPostCommand : IRequest<Result>, IIdValidator
+    public class ArchiveEngagedPostCommand : AuthToken, IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -53,7 +53,7 @@ namespace BitPaywall.Application.EngagedPosts.Commands
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Archiving posts was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Archiving post was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

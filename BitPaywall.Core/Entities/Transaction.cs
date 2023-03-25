@@ -10,7 +10,7 @@ namespace BitPaywall.Core.Entities
     public class Transaction : AuditableEntity
     {
         public int AccountId { get; set; }
-        public string DebitAccount { get; set; }
+        public string? DebitAccount { get; set; }
         public string CreditAccount { get; set; }
         public string Narration { get; set; }
         public decimal Amount { get; set; }

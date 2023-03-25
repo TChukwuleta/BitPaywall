@@ -115,7 +115,6 @@ namespace BitPaywall.Infrastructure.Services
             {
                 var helper = new LightningHelper(_config);
                 var txnReq = new InvoiceSubscription();
-
                 switch (userType)
                 {
                     case UserType.User:
@@ -148,23 +147,26 @@ namespace BitPaywall.Infrastructure.Services
                         var settledAdminInvoioce = adminClient.SubscribeInvoices(txnReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
                         using (var call = settledAdminInvoioce)
                         {
-                            var invoice = call.ResponseStream.Current;
-                            if (invoice.State == Invoice.Types.InvoiceState.Settled)
+                            while (await call.ResponseStream.MoveNext())
                             {
-                                Console.WriteLine(invoice.ToString());
-                                var split = invoice.Memo.Split('/');
-                                settledInvoiceResponse.PaymentRequest = invoice.PaymentRequest;
-                                settledInvoiceResponse.IsKeysend = invoice.IsKeysend;
-                                settledInvoiceResponse.Value = invoice.Value;
-                                settledInvoiceResponse.Expiry = invoice.Expiry;
-                                settledInvoiceResponse.Settled = invoice.Settled;
-                                settledInvoiceResponse.SettledDate = invoice.SettleDate;
-                                settledInvoiceResponse.SettledIndex = (long)invoice.SettleIndex;
-                                settledInvoiceResponse.Private = invoice.Private;
-                                settledInvoiceResponse.AmountInSat = invoice.AmtPaidSat;
-                                settledInvoiceResponse.PostId = int.Parse(split[0]);
-                                settledInvoiceResponse.UserId = split[1];
-                                return settledInvoiceResponse;
+                                var invoice = call.ResponseStream.Current;
+                                if (invoice.State == Invoice.Types.InvoiceState.Settled)
+                                {
+                                    Console.WriteLine(invoice.ToString());
+                                    var split = invoice.Memo.Split('/');
+                                    settledInvoiceResponse.PaymentRequest = invoice.PaymentRequest;
+                                    settledInvoiceResponse.IsKeysend = invoice.IsKeysend;
+                                    settledInvoiceResponse.Value = invoice.Value;
+                                    settledInvoiceResponse.Expiry = invoice.Expiry;
+                                    settledInvoiceResponse.Settled = invoice.Settled;
+                                    settledInvoiceResponse.SettledDate = invoice.SettleDate;
+                                    settledInvoiceResponse.SettledIndex = (long)invoice.SettleIndex;
+                                    settledInvoiceResponse.Private = invoice.Private;
+                                    settledInvoiceResponse.AmountInSat = invoice.AmtPaidSat;
+                                    settledInvoiceResponse.PostId = int.Parse(split[0]);
+                                    settledInvoiceResponse.UserId = split[1];
+                                    return settledInvoiceResponse;
+                                }
                             }
                         }
                         break;

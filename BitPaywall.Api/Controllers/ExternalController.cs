@@ -19,8 +19,8 @@ namespace BitPaywall.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("payforpost")]
-        public async Task<ActionResult<Result>> PayForPost(EngagePostCommand command)
+        [HttpPost("listenforpayment")]
+        public async Task<ActionResult<Result>> PayForPost(ListenForExternalPaymentCommand command)
         {
             try
             {
@@ -28,7 +28,21 @@ namespace BitPaywall.Api.Controllers
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Failed to pay for post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+                return Result.Failure($"Failed to finalize payment. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpGet("getbyid/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetPostById(int id)
+        {
+            try
+            {
+                return await _mediator.Send(new GetPostByIdGeneralQuery { PostId = id });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Post retrieval by id failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
     }

@@ -14,6 +14,7 @@ namespace BitPaywall.Application.Common.Interfaces
         DbSet<Post> Posts { get; set; }
         DbSet<EngagedPost> EngagedPosts { get; set; }
         DbSet<PostRating> PostRatings { get; set; }
+        DbSet<PostAnalytic> PostAnalytics { get; set; }
         DbSet<Account> Accounts { get; set; }
         DbSet<Transaction> Transactions { get; set; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

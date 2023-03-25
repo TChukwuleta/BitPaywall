@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BitPaywall.Application.EngagedPosts.Commands
 {
-    public class DeactivateEngagedPostCommand : IRequest<Result>, IIdValidator
+    public class DeactivateEngagedPostCommand : AuthToken, IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -40,7 +40,7 @@ namespace BitPaywall.Application.EngagedPosts.Commands
                 {
                     Id = request.Id,
                     UserId = request.UserId,
-                    Status = Status.Active
+                    Status = Status.Deactivated
                 };
                 var updatePostStatus = await new UpdateEngagedPostStatusCommandHandler(_context, _authService).Handle(statusUpdateRequest, cancellationToken);
                 var updatePostStatusResponse = string.IsNullOrEmpty(updatePostStatus.Message) ? updatePostStatus.Messages.FirstOrDefault() : updatePostStatus.Message;

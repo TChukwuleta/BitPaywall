@@ -73,7 +73,7 @@ namespace BitPaywall.Api.Controllers
         }
 
         [HttpPost("payforpost")]
-        public async Task<ActionResult<Result>> PayForPost(EngagePostCommand command)
+        public async Task<ActionResult<Result>> PayForPost(PayForPostCommand command)
         {
             try
             {
@@ -84,6 +84,19 @@ namespace BitPaywall.Api.Controllers
             catch (Exception ex)
             {
                 return Result.Failure($"Failed to pay for post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpPost("listenforinvoice")]
+        public async Task<ActionResult<Result>> ListenForInvoice(ListenForInvoiceCommand command)
+        {
+            try
+            {
+                return await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to finalize payment. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
@@ -107,11 +120,25 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await _mediator.Send(new GetPostByIdQuery { Id = id, UserId = userid });
+                return await _mediator.Send(new GetPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
             {
                 return Result.Failure($"Post retrieval by id failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpGet("getdraftpostbyid/{id}/{userid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetDraftPostById(int id, string userid)
+        {
+            try
+            {
+                return await _mediator.Send(new GetDraftPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Posts retrieval by id failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
@@ -121,11 +148,11 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await _mediator.Send(new GetAllUsersPostQuery { Skip = skip, Take = take, UserId = userid });
+                return await _mediator.Send(new GetAllUsersPostQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Transactions retrieval by user failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+                return Result.Failure($"Posts retrieval by user failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
@@ -135,11 +162,11 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await _mediator.Send(new GetAllPublishedPostsQuery { Skip = skip, Take = take, UserId = userid });
+                return await _mediator.Send(new GetAllPublishedPostsQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Transactions retrieval by user failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+                return Result.Failure($"Posts retrieval by user failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
@@ -149,7 +176,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                return await _mediator.Send(new GetAllPostDraftQuery { Skip = skip, Take = take, UserId = userid });
+                return await _mediator.Send(new GetAllPostDraftQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
             {

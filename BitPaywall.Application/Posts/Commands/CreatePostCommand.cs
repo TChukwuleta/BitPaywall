@@ -89,7 +89,7 @@ namespace BitPaywall.Application.Posts.Commands
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Post creation was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Post creation was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }
