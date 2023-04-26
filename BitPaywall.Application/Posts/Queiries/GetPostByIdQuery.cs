@@ -73,7 +73,7 @@ namespace BitPaywall.Application.Posts.Queiries
                     else
                     {
                         // Generate invoice using the post amount
-                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{request.UserId}", Core.Enums.UserType.Admin);
+                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{request.UserId}");
                         if (string.IsNullOrEmpty(invoice))
                         {
                             return Result.Failure("An error occured while generating invoice");

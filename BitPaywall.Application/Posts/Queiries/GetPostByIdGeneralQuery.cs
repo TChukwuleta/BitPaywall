@@ -30,7 +30,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Post retrieval was not successful. Invalid post specified");
                 }
-                var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{post.UserId}", Core.Enums.UserType.Admin);
+                var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{post.UserId}");
                 if (string.IsNullOrEmpty(invoice))
                 {
                     return Result.Failure("An error occured while generating invoice");
