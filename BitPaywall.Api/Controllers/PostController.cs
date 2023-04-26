@@ -1,13 +1,11 @@
 ﻿using BitPaywall.Application.Posts.Commands;
 using BitPaywall.Application.Posts.Queiries;
-using BitPaywall.Application.Transactions.Queries;
 using BitPaywall.Core.Model;
 using BitPaywall.Infrastructure.Utility;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BitPaywall.Api.Controllers
 {
@@ -106,6 +104,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetAllPostsQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
@@ -120,6 +119,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
@@ -134,6 +134,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetDraftPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
@@ -148,6 +149,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetAllUsersPostQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
@@ -162,6 +164,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetAllPublishedPostsQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)
@@ -176,6 +179,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
+                accessToken.ValidateToken(userid);
                 return await _mediator.Send(new GetAllPostDraftQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
             }
             catch (Exception ex)

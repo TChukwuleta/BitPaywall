@@ -10,10 +10,10 @@ namespace BitPaywall.Application.Common.Interfaces
 {
     public interface ILightningService
     {
-        Task<string> CreateInvoice(long satoshis, string message, UserType userType);
-        Task<long> GetChannelBalance(UserType userType);
+        Task<string> CreateInvoice(long satoshis, string message);
+        Task<long> GetChannelBalance();
         Task<long> GetWalletBalance(UserType userType);
-        Task<string> SendLightning(string paymentRequest, UserType userType);
-        Task<InvoiceSettlementResponse> ListenForSettledInvoice(UserType userType);
+        Task<string> SendLightning(string paymentRequest);
+        Task<InvoiceSettlementResponse> ListenForSettledInvoice();
     }
 }

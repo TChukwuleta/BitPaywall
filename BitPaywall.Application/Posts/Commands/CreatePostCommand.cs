@@ -49,10 +49,6 @@ namespace BitPaywall.Application.Posts.Commands
                 {
                     return Result.Failure("Post creation was not successful. Invalid user details specified");
                 }
-                if (string.IsNullOrEmpty(request.Image))
-                {
-                    return Result.Failure("Kindly pass in the base64 string of the image intended for this post");
-                }
                 var existingPost = await _context.Posts.FirstOrDefaultAsync(c => c.Title.ToLower() == request.Title.ToLower());
                 if (existingPost != null)
                 {
@@ -71,7 +67,7 @@ namespace BitPaywall.Application.Posts.Commands
                 var post = new Post
                 {
                     Title = request.Title,
-                    Image = await _cloudinaryService.UploadImage(request.Image, request.UserId),
+                    Image = string.IsNullOrEmpty(request.Image) ? "" : await _cloudinaryService.UploadImage(request.Image, request.UserId),
                     Amount = request.Amount,
                     Views = default,
                     CreatedDate = DateTime.Now,

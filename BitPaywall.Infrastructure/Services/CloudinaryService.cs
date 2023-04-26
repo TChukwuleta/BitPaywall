@@ -62,7 +62,6 @@ namespace BitPaywall.Infrastructure.Services
         {
             try
             {
-                //var fileLocation = Directory.GetCurrentDirectory() + $"\\{username}_{userid}.jpg";
                 Account account = new Account
                 {
                     ApiKey = _config["cloudinary:key"],
