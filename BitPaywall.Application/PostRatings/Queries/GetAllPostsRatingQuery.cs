@@ -4,15 +4,10 @@ using BitPaywall.Application.Common.Model.Response;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.PostRatings.Queries
 {
-    public class GetAllPostsRatingQuery : IRequest<Result>, IBaseValidator
+    public class GetAllPostsRatingQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public string UserId { get; set; }
     }
@@ -34,7 +29,7 @@ namespace BitPaywall.Application.PostRatings.Queries
                 var user = await _authService.GetUserById(request.UserId);
                 if (user.user == null)
                 {
-                    return Result.Failure("Unable to publish post. Invalid user details specified.");
+                    return Result.Failure("Unable to retrieve post rating. Invalid user details specified.");
                 }
                 var postRating = await _context.PostRatings.ToListAsync();
                 if (postRating.Count() <= 0)
@@ -45,9 +40,9 @@ namespace BitPaywall.Application.PostRatings.Queries
                 var groupedRating = postRating.GroupBy(c => c.PostId).ToList();
                 foreach (var item in groupedRating)
                 {
-                    var totalRatingCount = item.Sum(c => c.Rating);
-                    var totalAchievableRates = item.Count() * 5;
-                    var postAverageRating = (totalRatingCount / totalAchievableRates);
+                    decimal totalRatingCount = item.Sum(c => c.Rating);
+                    decimal totalAchievableRates = item.Count() * 5;
+                    decimal postAverageRating = (totalRatingCount / totalAchievableRates);
                     response.Add(new PostRatingResponse
                     {
                         PostId = item.Key,
@@ -58,7 +53,7 @@ namespace BitPaywall.Application.PostRatings.Queries
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Posts rating retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Posts rating retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

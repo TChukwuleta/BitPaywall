@@ -92,6 +92,7 @@ builder.Services.AddScoped<IAppDbContext>(prov => prov.GetService<AppDbContext>(
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddTransient<ILightningService, LightningService>();
 builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
+builder.Services.AddHostedService<BackgroundWorkerService>();
 
 var app = builder.Build();
 

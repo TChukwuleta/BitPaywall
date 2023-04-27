@@ -56,6 +56,8 @@ namespace BitPaywall.Application.Transactions.Commands
                     {
                         return Result.Failure("Unable to create transaction. Account does not exist for this useer");
                     }
+                    account.Balance -= request.Amount;
+                    _context.Accounts.Update(account);
                     var debitEntity = new Transaction
                     {
                         DebitAccount = request.DebitAccount,

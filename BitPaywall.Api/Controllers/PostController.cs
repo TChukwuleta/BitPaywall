@@ -85,19 +85,6 @@ namespace BitPaywall.Api.Controllers
             }
         }
 
-        [HttpPost("listenforinvoice")]
-        public async Task<ActionResult<Result>> ListenForInvoice(ListenForInvoiceCommand command)
-        {
-            try
-            {
-                return await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"Failed to finalize payment. Error: {ex?.Message ?? ex?.InnerException?.Message}");
-            }
-        }
-
         [HttpGet("getall/{skip}/{take}/{userid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Result>> GetAll(int skip, int take, string userid)

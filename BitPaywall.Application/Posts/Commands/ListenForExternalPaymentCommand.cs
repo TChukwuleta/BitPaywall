@@ -44,23 +44,6 @@ namespace BitPaywall.Application.Posts.Commands
                     return Result.Failure("Invalid author account. Kindly create a new account.");
                 }
 
-                var activityPost = await _context.PostAnalytics.FirstOrDefaultAsync(c => c.PostId == post.Id);
-                if (activityPost == null)
-                {
-                    var newPostActivity = new PostAnalytic
-                    {
-                        Status = Core.Enums.Status.Active,
-                        PostId = post.Id,
-                        AmountGenerated = post.Amount
-                    };
-                    await _context.PostAnalytics.AddAsync(newPostActivity);
-                }
-                else
-                {
-                    activityPost.AmountGenerated = activityPost.AmountGenerated + post.Amount;
-                    _context.PostAnalytics.Update(activityPost);
-                }
-
                 var transactionRequest = new CreateTransactionCommand
                 {
                     Description = "Payment for a post",
@@ -83,12 +66,15 @@ namespace BitPaywall.Application.Posts.Commands
                         CreatedDate = DateTime.Now,
                         Status = Core.Enums.Status.Active,
                         PostId = post.Id,
+                        ReadCount = 1,
+                        UserId = post.UserId,
                         AmountGenerated = post.Amount,
                     };
                     await _context.PostAnalytics.AddAsync(newPostAnalytics);
                 }
                 else
                 {
+                    postAnalytics.ReadCount = postAnalytics.ReadCount + 1;
                     postAnalytics.AmountGenerated += post.Amount;
                     _context.PostAnalytics.Update(postAnalytics);
                 }

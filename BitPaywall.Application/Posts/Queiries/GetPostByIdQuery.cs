@@ -48,6 +48,10 @@ namespace BitPaywall.Application.Posts.Queiries
                 var postAnalytics = await _context.PostAnalytics.FirstOrDefaultAsync(c => c.PostId == request.Id);
                 if (post.UserId != request.UserId)
                 {
+                    if (post.PostType == Core.Enums.PostStatusType.Draft)
+                    {
+                        return Result.Failure("Post retrieval was not successful. No available published post");
+                    }
                     var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.UserId == request.UserId && c.PostId == post.Id);
                     if (engagedPost != null)
                     {
@@ -58,13 +62,14 @@ namespace BitPaywall.Application.Posts.Queiries
                                 CreatedDate = DateTime.Now,
                                 Status = Core.Enums.Status.Active,
                                 PostId = request.Id,
-                                ReadCount = 1
+                                ReadCount = 1,
+                                UserId = post.UserId,
                             };
                             await _context.PostAnalytics.AddAsync(newPostAnalytics);
                         }
                         else
                         {
-                            postAnalytics.ReadCount += 1;
+                            postAnalytics.ReadCount = postAnalytics.ReadCount + 1;
                             _context.PostAnalytics.Update(postAnalytics);
                         }
                         await _context.SaveChangesAsync(cancellationToken);
@@ -89,7 +94,8 @@ namespace BitPaywall.Application.Posts.Queiries
                         CreatedDate = DateTime.Now,
                         Status = Core.Enums.Status.Active,
                         PostId = request.Id,
-                        ReadCount = 1
+                        ReadCount = 1,
+                        UserId = post.UserId
                     };
                     await _context.PostAnalytics.AddAsync(newPostAnalytics);
                 }

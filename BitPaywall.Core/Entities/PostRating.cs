@@ -11,5 +11,6 @@ namespace BitPaywall.Core.Entities
         public int PostId { get; set; }
         public int Rating { get; set; }
         public string UserId { get; set; }
+        public string RatedBy { get; set; }
     }
 }

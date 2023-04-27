@@ -44,6 +44,19 @@ namespace BitPaywall.Api.Controllers
             }
         }
 
+        [HttpPost("withdrawal")]
+        public async Task<ActionResult<Result>> WIthDrawal(UserWithdrawalCommand command)
+        {
+            try
+            {
+                return await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"User withdrawal was not successful. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
         [HttpGet("getusersbyid/{userId}")]
         public async Task<ActionResult<Result>> GetUserByRoleId(string userId)
         {

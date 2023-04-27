@@ -5,11 +5,6 @@ using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.PostRatings.Commands
 {
@@ -29,6 +24,7 @@ namespace BitPaywall.Application.PostRatings.Commands
         {
             _context = context;
             _authService = authService;
+            _config =  config;
         }
 
         public async Task<Result> Handle(RatePostCommand request, CancellationToken cancellationToken)
@@ -38,10 +34,6 @@ namespace BitPaywall.Application.PostRatings.Commands
             try
             {
                 var user = await _authService.GetUserById(request.UserId);
-                if (user.user == null)
-                {
-                    return Result.Failure("Unable to publish post. Invalid user details specified.");
-                }
                 var post = await _context.Posts.FirstOrDefaultAsync(c => c.Id == request.Id);
                 if (post == null)
                 {
@@ -66,7 +58,8 @@ namespace BitPaywall.Application.PostRatings.Commands
                     CreatedDate = DateTime.Now,
                     PostId = request.Id,
                     Rating = request.Rate,
-                    UserId = request.UserId
+                    UserId = request.UserId,
+                    RatedBy = user.user == null ? "ANonymous" : $"{user.user.FirstName} {user.user.LastName}"
                 };
                 await _context.PostRatings.AddAsync(newRating);
                 await _context.SaveChangesAsync(cancellationToken);

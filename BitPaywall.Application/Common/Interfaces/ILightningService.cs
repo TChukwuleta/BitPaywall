@@ -12,8 +12,9 @@ namespace BitPaywall.Application.Common.Interfaces
     {
         Task<string> CreateInvoice(long satoshis, string message);
         Task<long> GetChannelBalance();
-        Task<long> GetWalletBalance(UserType userType);
+        Task<long> GetWalletBalance();
         Task<string> SendLightning(string paymentRequest);
         Task<InvoiceSettlementResponse> ListenForSettledInvoice();
+        Task<(bool success, long expiry, long amount)> ValidateLightningAddress(string paymentRequest);
     }
 }
