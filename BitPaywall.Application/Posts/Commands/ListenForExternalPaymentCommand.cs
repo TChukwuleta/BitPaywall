@@ -74,7 +74,7 @@ namespace BitPaywall.Application.Posts.Commands
                                 Status = Core.Enums.Status.Active,
                                 PostId = post.Id,
                                 ReadCount = 1,
-                                AmountGenerated = post.Amount,
+                                AmountGenerated = post.Amount
                             };
                             await _context.PostAnalytics.AddAsync(newPostAnalytics);
                         }

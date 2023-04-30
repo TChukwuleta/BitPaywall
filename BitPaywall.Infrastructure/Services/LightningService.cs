@@ -156,5 +156,28 @@ namespace BitPaywall.Infrastructure.Services
                 throw;
             }
         }
+
+        public async Task<long> DecodePaymentRequest(string paymentRequest)
+        {
+            var helper = new LightningHelper(_config);
+            var paymentReq = new PayReqString();
+            var walletBalance = await GetWalletBalance();
+            try
+            {
+                var adminClient = helper.GetAdminClient();
+                paymentReq.PayReq = paymentRequest;
+                var decodedAdminPaymentReq = adminClient.DecodePayReq(paymentReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
+                if (walletBalance < decodedAdminPaymentReq.NumSatoshis)
+                {
+                    throw new ArgumentException("Unable to complete lightning payment. Insufficient node balance. Please contact support");
+                }
+                var result = decodedAdminPaymentReq.NumSatoshis;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

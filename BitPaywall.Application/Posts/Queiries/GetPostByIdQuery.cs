@@ -1,14 +1,10 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Application.Common.Interfaces.Validators;
 using BitPaywall.Core.Entities;
+using BitPaywall.Core.Enums;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
@@ -84,7 +80,7 @@ namespace BitPaywall.Application.Posts.Queiries
                         else
                         {
                             // Generate invoice using the post amount
-                            var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{request.UserId}");
+                            var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{(int)PaymentType.Purchase}|{post.Id}/{request.UserId}");
                             if (string.IsNullOrEmpty(invoice))
                             {
                                 return Result.Failure("An error occured while generating invoice");

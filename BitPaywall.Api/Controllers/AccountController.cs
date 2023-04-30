@@ -1,4 +1,5 @@
 ﻿using BitPaywall.Application.Accounts.Queries;
+using BitPaywall.Application.Users.Commands;
 using BitPaywall.Core.Model;
 using BitPaywall.Infrastructure.Utility;
 using MediatR;
@@ -21,6 +22,34 @@ namespace BitPaywall.Api.Controllers
             if (accessToken == null)
             {
                 throw new Exception("You are not authorized!");
+            }
+        }
+
+        [HttpPost("topupaccount")]
+        public async Task<ActionResult<Core.Model.Result>> TopUpAccount(TopUpCommand command)
+        {
+            try
+            {
+                accessToken.ValidateToken(command.UserId);
+                return await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed to topup user account. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpPost("withdrawsatoshis")]
+        public async Task<ActionResult<Result>> WithdrawSatoshis(WithdrawSatoshiCommand command)
+        {
+            try
+            {
+                accessToken.ValidateToken(command.UserId);
+                return await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Failed make payment. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 

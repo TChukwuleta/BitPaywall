@@ -82,7 +82,7 @@ namespace BitPaywall.Application.Posts.Commands
                         return Result.Success("Coming soon. Please choose another payment method");
                         break;
                     case PaymentModeType.Lightning:
-                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{request.UserId}");
+                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{(int)PaymentType.Purchase}|{post.Id}/{request.UserId}");
                         if (string.IsNullOrEmpty(invoice))
                         {
                             return Result.Failure("An error occured while generating invoice");

@@ -36,7 +36,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
                 {
                     return Result.Failure("Unable to retrieve engaged post. Invalid user details specified");
                 }
-                var engagedPost = await _context.EngagedPosts.FirstOrDefaultAsync(c => c.UserId == request.UserId && c.Id == request.Id);
+                var engagedPost = await _context.EngagedPosts.Include(c => c.Post).FirstOrDefaultAsync(c => c.UserId == request.UserId && c.Id == request.Id);
                 if (engagedPost == null)
                 {
                     return Result.Failure("Unable to retrieve engaged post. Invalid engaged post specified");

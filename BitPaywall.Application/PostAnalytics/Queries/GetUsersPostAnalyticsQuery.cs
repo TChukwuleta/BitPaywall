@@ -28,7 +28,7 @@ namespace BitPaywall.Application.PostAnalytics.Queries
                 {
                     return Result.Failure("Unable to retrieve post rating. Invalid user details specified.");
                 }
-                var userPostsRating = await _context.PostAnalytics.Where(c => c.UserId == request.UserId).ToListAsync();
+                var userPostsRating = await _context.PostAnalytics.ToListAsync();
                 if (userPostsRating == null || userPostsRating.Count() <= 0)
                 {
                     return Result.Failure("No post rating found for this user");

@@ -35,7 +35,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
                 {
                     return Result.Failure("Unable to retrieve engaged posts. Invalid user details specified");
                 }
-                var engagedPosts = await _context.EngagedPosts.Where(c => c.UserId == request.UserId).ToListAsync();
+                var engagedPosts = await _context.EngagedPosts.Include(c => c.Post).Where(c => c.UserId == request.UserId).ToListAsync();
                 if (engagedPosts.Count() <= 0)
                 {
                     return Result.Failure("No engaged posts found for this user");

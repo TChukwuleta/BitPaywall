@@ -40,7 +40,7 @@ namespace BitPaywall.Application.EngagedPosts.Queries
                 {
                     return Result.Failure("Unable to retrieve deactivated engaged posts. Invalid user details specified");
                 }
-                var engagedPosts = await _context.EngagedPosts.Where(c => c.UserId == request.UserId && c.Status == Status.Deactivated).ToListAsync();
+                var engagedPosts = await _context.EngagedPosts.Include(c => c.Post).Where(c => c.UserId == request.UserId && c.Status == Status.Deactivated).ToListAsync();
                 if (engagedPosts.Count() <= 0)
                 {
                     return Result.Failure("No deactivated engaged posts found for this user");
