@@ -4,6 +4,7 @@ using BitPaywall.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BitPaywall.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230427070315_postanalyticsUpdate")]
+    partial class postanalyticsUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -171,7 +174,7 @@ namespace BitPaywall.Infrastructure.Migrations
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ReadCount")
+                    b.Property<int?>("ReadCount")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")

@@ -1,13 +1,10 @@
 ﻿using BitPaywall.Application.EngagedPosts.Commands;
 using BitPaywall.Application.EngagedPosts.Queries;
-using BitPaywall.Application.Posts.Commands;
-using BitPaywall.Application.Posts.Queiries;
 using BitPaywall.Core.Model;
 using BitPaywall.Infrastructure.Utility;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BitPaywall.Api.Controllers

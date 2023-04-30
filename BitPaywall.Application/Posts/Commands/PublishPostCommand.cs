@@ -49,7 +49,7 @@ namespace BitPaywall.Application.Posts.Commands
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Publishing post was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Publishing post was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

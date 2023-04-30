@@ -1,6 +1,5 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Application.Common.Model.Response;
-using BitPaywall.Core.Enums;
 using BitPaywall.Infrastructure.Helper;
 using Grpc.Core;
 using Lnrpc;
@@ -50,13 +49,38 @@ namespace BitPaywall.Infrastructure.Services
             }
         }
 
+        public async Task<(bool success, long expiry, long amount)> ValidateLightningAddress(string paymentRequest)
+        {
+            var helper = new LightningHelper(_config);
+            try
+            {
+                var adminClient = helper.GetAdminClient();
+                var request = new PayReqString
+                {
+                    PayReq = paymentRequest
+                };
+                var response = await adminClient.DecodePayReqAsync(request, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
+                if (response == null)
+                {
+                    return (false, 0, 0);
+                }
+                var paymentAddr = response.PaymentAddr;
+                var hash = response.PaymentHash;
+                return (true, response.Expiry, response.NumSatoshis);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public async Task<long> GetWalletBalance()
         {
             var helper = new LightningHelper(_config);
             var walletBalanceRequest = new WalletBalanceRequest();
             try
             {
-                var adminClient = helper.GetUserClient();
+                var adminClient = helper.GetAdminClient();
                 var response = adminClient.WalletBalance(walletBalanceRequest, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) }).TotalBalance;
                 return response;
             }
@@ -65,11 +89,6 @@ namespace BitPaywall.Infrastructure.Services
 
                 throw ex;
             }
-        }
-
-        public Task<long> GetWalletBalance(UserType userType)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<InvoiceSettlementResponse> ListenForSettledInvoice()
@@ -119,19 +138,14 @@ namespace BitPaywall.Infrastructure.Services
             var helper = new LightningHelper(_config);
             var sendRequest = new SendRequest();
             var paymentReq = new PayReqString();
-            var walletBalance = await GetWalletBalance();
             try
             {
-                var adminClient = helper.GetUserClient();
+                var adminClient = helper.GetAdminClient();
                 paymentReq.PayReq = paymentRequest;
-                var decodedAdminPaymentReq = adminClient.DecodePayReq(paymentReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetUserMacaroon()) });
-                if (walletBalance < decodedAdminPaymentReq.NumSatoshis)
-                {
-                    throw new ArgumentException("Unable to complete lightning payment. Insufficient funds");
-                }
+                var decodedAdminPaymentReq = adminClient.DecodePayReq(paymentReq, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
                 sendRequest.Amt = decodedAdminPaymentReq.NumSatoshis;
                 sendRequest.PaymentRequest = paymentRequest;
-                var adminResponse = adminClient.SendPaymentSync(sendRequest, new Metadata() { new Metadata.Entry("macaroon", helper.GetUserMacaroon()) });
+                var adminResponse = adminClient.SendPaymentSync(sendRequest, new Metadata() { new Metadata.Entry("macaroon", helper.GetAdminMacaroon()) });
                 var result = adminResponse.PaymentError;
                 return result;
 

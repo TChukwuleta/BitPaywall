@@ -1,8 +1,8 @@
-﻿using BitPaywall.Application.Posts.Commands;
+﻿using BitPaywall.Application.PostRatings.Commands;
+using BitPaywall.Application.Posts.Commands;
 using BitPaywall.Application.Posts.Queiries;
 using BitPaywall.Core.Model;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BitPaywall.Api.Controllers
@@ -29,6 +29,19 @@ namespace BitPaywall.Api.Controllers
             catch (Exception ex)
             {
                 return Result.Failure($"Failed to finalize payment. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpPost("ratepost")]
+        public async Task<ActionResult<Result>> RatePost(RatePostCommand command)
+        {
+            try
+            {
+                return await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"UNable to rate post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
