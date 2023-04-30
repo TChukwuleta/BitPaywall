@@ -100,8 +100,6 @@ namespace BitPaywall.Application.Posts.Commands
                         {
                             return Result.Failure("Cannot pay for post with account. Insufficient funds.");
                         }
-                        account.Balance -= post.Amount;
-                        _context.Accounts.Update(account);
                         var transactionRequest = new CreateTransactionCommand
                         {
                             Description = "Payment for a post",

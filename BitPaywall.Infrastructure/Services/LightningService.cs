@@ -99,7 +99,7 @@ namespace BitPaywall.Infrastructure.Services
                             settledInvoiceResponse.SettledIndex = (long)invoice.SettleIndex;
                             settledInvoiceResponse.Private = invoice.Private;
                             settledInvoiceResponse.AmountInSat = invoice.AmtPaidSat;
-                            settledInvoiceResponse.PostId = int.Parse(split[0]);
+                            settledInvoiceResponse.Type = split[0];
                             settledInvoiceResponse.UserId = split[1];
                             return settledInvoiceResponse;
                         }

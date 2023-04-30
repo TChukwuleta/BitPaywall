@@ -3,15 +3,10 @@ using BitPaywall.Application.Common.Interfaces.Validators;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Accounts.Queries
 {
-    internal class GetAccountByAccountIdQuery : IRequest<Result>, IIdValidator
+    public class GetAccountByAccountIdQuery : IRequest<Result>, IIdValidator
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -46,7 +41,7 @@ namespace BitPaywall.Application.Accounts.Queries
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Account retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Account retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

@@ -4,11 +4,6 @@ using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
@@ -32,7 +27,7 @@ namespace BitPaywall.Application.Posts.Queiries
 
         public async Task<Result> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
         {
-            var posts = new List<Post>();
+            object entity = default;
             try
             {
                 var user = await _authService.GetUserById(request.UserId);
@@ -40,7 +35,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Posts retrieval was not successful. Invalid user details");
                 }
-                var allPosts = await _context.Posts.Select(item => new Post
+                var allPosts = await _context.Posts.Where(c => c.PostType == Core.Enums.PostStatusType.Published).Select(item => new Post
                 {
                     Id = item.Id,
                     Image = item.Image,
@@ -58,23 +53,26 @@ namespace BitPaywall.Application.Posts.Queiries
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
-                    posts = allPosts;
+                    entity = new
+                    {
+                        Posts = allPosts,
+                        Count = allPosts.Count()
+                    };
                 }
                 else
                 {
-                    posts = allPosts.Skip(request.Skip).Take(request.Take).ToList();
+                    entity = new
+                    {
+                        Posts = allPosts.Skip(request.Skip).Take(request.Take).ToList(),
+                        Count = allPosts.Count()
+                    };
                 }
 
-                var entity = new
-                {
-                    Post = posts,
-                    Count = allPosts.Count()
-                };
                 return Result.Success("All posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }
