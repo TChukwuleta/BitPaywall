@@ -82,7 +82,7 @@ namespace BitPaywall.Application.Posts.Commands
                         return Result.Success("Coming soon. Please choose another payment method");
                         break;
                     case PaymentModeType.Lightning:
-                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{request.UserId}");
+                        var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{(int)PaymentType.Purchase}|{post.Id}/{request.UserId}");
                         if (string.IsNullOrEmpty(invoice))
                         {
                             return Result.Failure("An error occured while generating invoice");
@@ -100,8 +100,6 @@ namespace BitPaywall.Application.Posts.Commands
                         {
                             return Result.Failure("Cannot pay for post with account. Insufficient funds.");
                         }
-                        account.Balance -= post.Amount;
-                        _context.Accounts.Update(account);
                         var transactionRequest = new CreateTransactionCommand
                         {
                             Description = "Payment for a post",

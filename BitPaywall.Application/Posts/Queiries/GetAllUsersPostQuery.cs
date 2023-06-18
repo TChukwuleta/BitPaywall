@@ -27,6 +27,7 @@ namespace BitPaywall.Application.Posts.Queiries
 
         public async Task<Result> Handle(GetAllUsersPostQuery request, CancellationToken cancellationToken)
         {
+            object entity = default;
             var response = new List<Post>();
             try
             {
@@ -42,22 +43,25 @@ namespace BitPaywall.Application.Posts.Queiries
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
-                    response = posts;
+                    entity = new
+                    {
+                        Posts = posts,
+                        Count = posts.Count()
+                    };
                 }
                 else
                 {
-                    response = posts.Skip(request.Skip).Take(request.Take).ToList();
+                    entity = new
+                    {
+                        Posts = posts.Skip(request.Skip).Take(request.Take).ToList(),
+                        Count = posts.Count()
+                    };
                 }
-                var entity = new
-                {
-                    Post = response,
-                    Count = posts.Count()
-                };
                 return Result.Success("Retrieving user's post was successful", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "User's posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"User's posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

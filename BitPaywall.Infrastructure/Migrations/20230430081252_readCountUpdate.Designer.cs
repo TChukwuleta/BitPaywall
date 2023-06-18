@@ -4,6 +4,7 @@ using BitPaywall.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BitPaywall.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230430081252_readCountUpdate")]
+    partial class readCountUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("BitPaywall.Core.Entities.EngagedPost", b =>
@@ -94,7 +97,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("EngagedPosts", (string)null);
+                    b.ToTable("EngagedPosts");
                 });
 
             modelBuilder.Entity("BitPaywall.Core.Entities.Post", b =>
@@ -148,7 +151,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("BitPaywall.Core.Entities.PostAnalytic", b =>
@@ -179,7 +182,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PostAnalytics", (string)null);
+                    b.ToTable("PostAnalytics");
                 });
 
             modelBuilder.Entity("BitPaywall.Core.Entities.PostRating", b =>
@@ -211,7 +214,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PostRatings", (string)null);
+                    b.ToTable("PostRatings");
                 });
 
             modelBuilder.Entity("BitPaywall.Core.Entities.Transaction", b =>
@@ -264,7 +267,7 @@ namespace BitPaywall.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

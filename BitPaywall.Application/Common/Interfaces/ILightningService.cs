@@ -14,6 +14,7 @@ namespace BitPaywall.Application.Common.Interfaces
         Task<long> GetChannelBalance();
         Task<long> GetWalletBalance();
         Task<string> SendLightning(string paymentRequest);
+        Task<long> DecodePaymentRequest(string paymentRequest);
         Task<InvoiceSettlementResponse> ListenForSettledInvoice();
         Task<(bool success, long expiry, long amount)> ValidateLightningAddress(string paymentRequest);
     }

@@ -17,7 +17,7 @@ namespace BitPaywall.Application.Common.Model.Response
         public long SettledIndex { get; set; }
         public bool Private { get; set; }
         public long AmountInSat { get; set; }
-        public int PostId { get; set; }
+        public string Type { get; set; }
         public string UserId { get; set; }
     }
 }

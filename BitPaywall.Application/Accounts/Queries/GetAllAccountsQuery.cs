@@ -3,16 +3,13 @@ using BitPaywall.Application.Common.Interfaces.Validators;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Accounts.Queries
 {
     public class GetAllAccountsQuery : IRequest<Result>, IBaseValidator
     {
+        public int Skip { get; set; }
+        public int Take { get; set; }
         public string UserId { get; set; }
     }
 
@@ -31,6 +28,7 @@ namespace BitPaywall.Application.Accounts.Queries
         {
             try
             {
+                object entity = default;
                 var user = await _authService.GetUserById(request.UserId);
                 if (user.user == null)
                 {
@@ -41,11 +39,27 @@ namespace BitPaywall.Application.Accounts.Queries
                 {
                     return Result.Failure("Accounts retrieval was not successful. No accounts currently exist on the system");
                 }
-                return Result.Success("Accounts retrieval was successful.", accounts);
+                if (request.Skip == 0 && request.Take == 0)
+                {
+                    entity = new
+                    {
+                        Accounts = accounts,
+                        Count = accounts.Count()
+                    };
+                }
+                else
+                {
+                    entity = new
+                    {
+                        Accounts = accounts.Skip(request.Skip).Take(request.Take).ToList(),
+                        Count = accounts.Count()
+                    };
+                }
+                return Result.Success("Accounts retrieval was successful.", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Account retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Accounts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

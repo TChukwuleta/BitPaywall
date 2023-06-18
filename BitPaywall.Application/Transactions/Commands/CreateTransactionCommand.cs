@@ -5,12 +5,6 @@ using BitPaywall.Core.Enums;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Transactions.Commands
 {
@@ -45,10 +39,6 @@ namespace BitPaywall.Application.Transactions.Commands
                     return Result.Failure("Transaction creation failed. Invalid user details");
                 }
                 var creditAccount = await _context.Accounts.FirstOrDefaultAsync(c => c.AccountNumber == request.CreditAccount);
-                if (creditAccount == null)
-                {
-                    return Result.Failure("Invalid credit account specified");
-                }
                 if (!string.IsNullOrEmpty(request.DebitAccount))
                 {
                     var account = await _context.Accounts.FirstOrDefaultAsync(c => c.AccountNumber == request.DebitAccount);
@@ -61,10 +51,10 @@ namespace BitPaywall.Application.Transactions.Commands
                     var debitEntity = new Transaction
                     {
                         DebitAccount = request.DebitAccount,
-                        CreditAccount = request.CreditAccount,
+                        CreditAccount = string.IsNullOrEmpty(request.CreditAccount) ? "" : request.CreditAccount,
                         UserId = account.UserId,
                         Amount = request.Amount,
-                        TransactionType = request.TransactionType,
+                        TransactionType = TransactionType.Debit,
                         TransactionReference = reference,
                         TransactionStatus = TransactionStatus.Success,
                         Narration = request.Description,
@@ -72,29 +62,35 @@ namespace BitPaywall.Application.Transactions.Commands
                         AccountId = account.Id
                     };
                     await _context.Transactions.AddAsync(debitEntity);
+                    account.Balance -= request.Amount;
+                    _context.Accounts.Update(account);
                 }
-                var entity = new Transaction
+                if (!string.IsNullOrEmpty(request.CreditAccount))
                 {
-                    DebitAccount = string.IsNullOrEmpty(request.DebitAccount) ? "" : request.DebitAccount,
-                    CreditAccount = request.CreditAccount,
-                    UserId = creditAccount.UserId,
-                    Amount = request.Amount,
-                    TransactionType = request.TransactionType,
-                    TransactionReference = reference,
-                    TransactionStatus = TransactionStatus.Success,
-                    Narration = request.Description,
-                    CreatedDate = DateTime.Now,
-                    AccountId = creditAccount.Id
-                };
-                await _context.Transactions.AddAsync(entity);
-                creditAccount.Balance += request.Amount;
-                _context.Accounts.Update(creditAccount);
+                    var entity = new Transaction
+                    {
+                        DebitAccount = string.IsNullOrEmpty(request.DebitAccount) ? "" : request.DebitAccount,
+                        CreditAccount = request.CreditAccount,
+                        UserId = creditAccount.UserId,
+                        Amount = request.Amount,
+                        TransactionType = TransactionType.Credit,
+                        TransactionReference = reference,
+                        TransactionStatus = TransactionStatus.Success,
+                        Narration = request.Description,
+                        CreatedDate = DateTime.Now,
+                        AccountId = creditAccount.Id
+                    };
+                    await _context.Transactions.AddAsync(entity);
+                    creditAccount.Balance += request.Amount;
+                    _context.Accounts.Update(creditAccount);
+                }
+                
                 await _context.SaveChangesAsync(cancellationToken);
-                return Result.Success("Transaction creation was successful", entity);
+                return Result.Success("Transaction creation was successful");
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Transactions creation was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Transactions creation was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

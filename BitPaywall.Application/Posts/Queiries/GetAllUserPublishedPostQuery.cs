@@ -1,31 +1,31 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
 using BitPaywall.Application.Common.Interfaces.Validators;
-using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BitPaywall.Application.Posts.Queiries
 {
-    public class GetAllPublishedPostsQuery : AuthToken, IRequest<Result>, IBaseValidator
+    public class GetAllUserPublishedPostQuery : AuthToken, IRequest<Result>, IBaseValidator
     {
         public int Skip { get; set; }
         public int Take { get; set; }
         public string UserId { get; set; }
     }
-    public class GetAllPublishedPostsQueryHandler : IRequestHandler<GetAllPublishedPostsQuery, Result>
+
+    public class GetAllUserPublishedPostQueryHandler : IRequestHandler<GetAllUserPublishedPostQuery, Result>
     {
         private readonly IAuthService _authService;
         private readonly IAppDbContext _context;
-        public GetAllPublishedPostsQueryHandler(IAuthService authService, IAppDbContext context)
+        public GetAllUserPublishedPostQueryHandler(IAuthService authService, IAppDbContext context)
         {
             _authService = authService;
             _context = context;
         }
 
-        public async Task<Result> Handle(GetAllPublishedPostsQuery request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(GetAllUserPublishedPostQuery request, CancellationToken cancellationToken)
         {
-            var posts = new List<Post>();
+            object entity = default;
             try
             {
                 var user = await _authService.GetUserById(request.UserId);
@@ -33,29 +33,33 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Published posts retrieval was not successful. Invalid user details specified");
                 }
-                var publishedPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostStatusType.Published).ToListAsync();
+                var publishedPosts = await _context.Posts.Where(c => c.UserId == request.UserId && c.PostType == Core.Enums.PostStatusType.Draft).ToListAsync();
                 if (publishedPosts.Count() <= 0)
                 {
                     return Result.Failure("Published posts retrieval was not successful. No published posts found for this user");
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
-                    posts = publishedPosts;
+                    entity = new
+                    {
+                        Posts = publishedPosts,
+                        Count = publishedPosts.Count()
+                    };
                 }
                 else
                 {
-                    posts = publishedPosts.Skip(request.Skip).Take(request.Take).ToList();
+                    entity = new
+                    {
+                        Posts = publishedPosts.Skip(request.Skip).Take(request.Take).ToList(),
+                        Count = publishedPosts.Count()
+                    };
                 }
-                var entity = new
-                {
-                    Post = posts,
-                    Count = publishedPosts.Count()
-                };
-                return Result.Success("Published posts retrieval was successful", posts);
+
+                return Result.Success("Published posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Published posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Published posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

@@ -31,7 +31,7 @@ namespace BitPaywall.Application.Posts.Queiries
 
         public async Task<Result> Handle(GetAllPostDraftQuery request, CancellationToken cancellationToken)
         {
-            var posts = new List<Post>();
+            object entity = default;
             try
             {
                 var user = await _authService.GetUserById(request.UserId);
@@ -46,22 +46,26 @@ namespace BitPaywall.Application.Posts.Queiries
                 }
                 if (request.Skip == 0 && request.Take == 0)
                 {
-                    posts = draftPosts;
+                    entity = new
+                    {
+                        Posts = draftPosts,
+                        Count = draftPosts.Count()
+                    };
                 }
                 else
                 {
-                    posts = draftPosts.Skip(request.Skip).Take(request.Take).ToList();
+                    entity = new
+                    {
+                        Posts = draftPosts.Skip(request.Skip).Take(request.Take).ToList(),
+                        Count = draftPosts.Count()
+                    };
                 }
-                var entity = new
-                {
-                    Post = posts,
-                    Count = draftPosts.Count()
-                };
+                
                 return Result.Success("Draft posts retrieval was successful", entity);
             }
             catch (Exception ex)
             {
-                return Result.Failure(new string[] { "Draft posts retrieval was not successful", ex?.Message ?? ex?.InnerException.Message });
+                return Result.Failure($"Draft posts retrieval was not successful. {ex?.Message ?? ex?.InnerException.Message }");
             }
         }
     }

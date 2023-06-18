@@ -1,4 +1,5 @@
 ﻿using BitPaywall.Application.Common.Interfaces;
+using BitPaywall.Core.Enums;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace BitPaywall.Application.Posts.Queiries
                 {
                     return Result.Failure("Post retrieval was not successful. Invalid post specified");
                 }
-                var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{post.Id}/{post.UserId}");
+                var invoice = await _lightningService.CreateInvoice((long)post.Amount, $"{(int)PaymentType.Purchase}|{post.Id}/{post.UserId}");
                 if (string.IsNullOrEmpty(invoice))
                 {
                     return Result.Failure("An error occured while generating invoice");

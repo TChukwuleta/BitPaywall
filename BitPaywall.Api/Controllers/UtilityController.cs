@@ -84,21 +84,6 @@ namespace BitPaywall.Api.Controllers
             }
         }
 
-        [HttpGet("getusertype")]
-        public async Task<ActionResult<Result>> GetUserType()
-        {
-            try
-            {
-                return await Task.Run(() => Result.Success(
-                 ((UserType[])Enum.GetValues(typeof(UserType))).Select(x => new { Value = (int)x, Name = x.ToString() }).ToList()
-                 ));
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure(new string[] { "Get user type enums failed" + ex?.Message ?? ex?.InnerException?.Message });
-            }
-        }
-
         [HttpGet("getstatus")]
         public async Task<ActionResult<Result>> GetStatus()
         {
