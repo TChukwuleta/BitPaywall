@@ -11,5 +11,6 @@ namespace BitPaywall.Core.Model
     {
         [JsonIgnore]
         public string? AccessToken { get; set; }
+        public string UserId { get; set; }    
     }
 }

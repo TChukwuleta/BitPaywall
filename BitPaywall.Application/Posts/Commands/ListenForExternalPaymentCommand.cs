@@ -4,16 +4,12 @@ using BitPaywall.Core.Entities;
 using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
     public class ListenForExternalPaymentCommand : IRequest<Result>
     {
+        public string UserId { get; set; }
     }
 
     public class ListenForExternalPaymentCommandHandler : IRequestHandler<ListenForExternalPaymentCommand, Result>
@@ -83,8 +79,7 @@ namespace BitPaywall.Application.Posts.Commands
             }
             catch (Exception ex)
             {
-
-                throw;
+                return Result.Failure($"Invoice settlement was not successful {ex?.Message ?? ex?.InnerException.Message}");
             }
         }
     }

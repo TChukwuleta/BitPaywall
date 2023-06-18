@@ -6,11 +6,6 @@ using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
@@ -21,7 +16,6 @@ namespace BitPaywall.Application.Posts.Commands
         public string Story { get; set; }
         public string Image { get; set; }
         public decimal Amount { get; set; }
-        public string UserId { get; set; }
         public PostCategory PostCategory { get; set; }
     }
 
@@ -78,7 +72,6 @@ namespace BitPaywall.Application.Posts.Commands
                     Description = request.Description,
                     Story = request.Story
                 };
-
                 await _context.Posts.AddAsync(post);
                 await _context.SaveChangesAsync(cancellationToken);
                 return Result.Success("Post creation was successful", post);

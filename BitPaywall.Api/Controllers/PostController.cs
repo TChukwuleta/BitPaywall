@@ -1,16 +1,13 @@
-﻿using BitPaywall.Application.Posts.Commands;
-using BitPaywall.Application.Posts.Queiries;
+﻿using BitPaywall.Application.Posts.Queiries;
 using BitPaywall.Core.Model;
-using BitPaywall.Infrastructure.Utility;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BitPaywall.Api.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class PostController : ApiController
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PostController : ControllerBase
     {
         protected readonly IHttpContextAccessor _contextAccessor;
         private readonly IMediator _mediator;
@@ -18,96 +15,58 @@ namespace BitPaywall.Api.Controllers
         {
             _contextAccessor = contextAccessor;
             _mediator = mediator;
-            accessToken = _contextAccessor.HttpContext.Request.Headers["Authorization"].ToString()?.ExtractToken();
-            if (accessToken == null)
-            {
-                throw new Exception("You are not authorized!");
-            }
         }
 
-        [HttpPost("create")]
-        public async Task<ActionResult<Result>> CreatePost(CreatePostCommand command)
-        {
-            try
-            {
-                command.AccessToken = accessToken.RawData;
-                accessToken.ValidateToken(command.UserId);
-                return await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"Failed to create new post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
-            }
-        }
-
-        [HttpPost("update")]
-        public async Task<ActionResult<Result>> UpdatePost(UpdatePostCommand command)
-        {
-            try
-            {
-                command.AccessToken = accessToken.RawData;
-                accessToken.ValidateToken(command.UserId);
-                return await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"Failed to update user post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
-            }
-        }
-
-        [HttpPost("publishpost")]
-        public async Task<ActionResult<Result>> PublishPost(PublishPostCommand command)
-        {
-            try
-            {
-                command.AccessToken = accessToken.RawData;
-                accessToken.ValidateToken(command.UserId);
-                return await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"Failed to publish post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
-            }
-        }
-
-        [HttpPost("payforpost")]
-        public async Task<ActionResult<Result>> PayForPost(PayForPostCommand command)
-        {
-            try
-            {
-                command.AccessToken = accessToken.RawData;
-                accessToken.ValidateToken(command.UserId);
-                return await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
-                return Result.Failure($"Failed to pay for post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
-            }
-        }
-
-        [HttpGet("getall/{skip}/{take}/{userid}")]
+        [HttpGet("getall/{skip}/{take}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Result>> GetAll(int skip, int take, string userid)
+        public async Task<ActionResult<Result>> GetAll(int skip, int take)
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetAllPostsQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetAllPostsQuery { Skip = skip, Take = take });
             }
             catch (Exception ex)
             {
-                return Result.Failure($"Transactions retrieval by user failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+                return Result.Failure($"Posts retrieval failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 
-        [HttpGet("getbyid/{id}/{userid}")]
+
+        [HttpGet("getpostsummary")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Result>> GetPostById(int id, string userid)
+        public async Task<ActionResult<Result>> GetPostSummary()
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetPostsSummaryQuery());
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Posts summary retrieval failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpGet("getpopularposts/{take}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetPopularPosts(int take)
+        {
+            try
+            {
+                return await _mediator.Send(new GetPopularPostsQuery { Take = take });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure($"Posts retrieval failed. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+            }
+        }
+
+        [HttpGet("getbyid/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Result>> GetPostById(int id)
+        {
+            try
+            {
+                return await _mediator.Send(new GetPostByIdQuery { Id = id });
             }
             catch (Exception ex)
             {
@@ -121,8 +80,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetDraftPostByIdQuery { Id = id, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetDraftPostByIdQuery { Id = id, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -136,8 +94,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetAllUsersPostQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetAllUsersPostQuery { Skip = skip, Take = take, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -151,8 +108,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetAllPublishedPostsQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetAllPublishedPostsQuery { Skip = skip, Take = take, UserId = userid });
             }
             catch (Exception ex)
             {
@@ -166,8 +122,7 @@ namespace BitPaywall.Api.Controllers
         {
             try
             {
-                accessToken.ValidateToken(userid);
-                return await _mediator.Send(new GetAllPostDraftQuery { Skip = skip, Take = take, UserId = userid, AccessToken = accessToken.RawData });
+                return await _mediator.Send(new GetAllPostDraftQuery { Skip = skip, Take = take, UserId = userid });
             }
             catch (Exception ex)
             {

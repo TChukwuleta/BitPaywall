@@ -41,7 +41,7 @@ namespace BitPaywall.Api.Controllers
             }
             catch (Exception ex)
             {
-                return Result.Failure($"UNable to rate post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
+                return Result.Failure($"Unable to rate post. Error: {ex?.Message ?? ex?.InnerException?.Message}");
             }
         }
 

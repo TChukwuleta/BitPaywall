@@ -5,18 +5,12 @@ using BitPaywall.Core.Model;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BitPaywall.Application.Posts.Commands
 {
     public class UpdatePostCommand : AuthToken, IRequest<Result>, IIdValidator, IPostRequestValidator
     {
         public int Id { get; set; }
-        public string UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Story { get; set; }
